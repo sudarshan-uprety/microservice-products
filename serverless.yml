@@ -12,7 +12,7 @@ plugins:
 
 functions:
   getProduct:
-    handler: functions/getProduct.handler
+    handler: functions/product/getProduct.handler
     events:
       - http:
           path: get/products
@@ -24,9 +24,26 @@ functions:
           path: get/my/products
           method: get
 
-#  createProduct:
-#    handler: functions/createProduct
+  createProduct:
+    handler: functions/product/createProduct.handler
+    events:
+      - http:
+          path: create/product
+          method: post
 
+  updateProduct:
+    handler: functions/product/updateProduct.handler
+    events:
+      - http:
+          path: update/product/{id}
+          method: put
+
+  deleteProduct:
+    handler: functions/product/deleteProduct.handler
+    events:
+      - http:
+          path: delete/product/{id}
+          method: delete
 
 custom:
   serverless-offline:
