@@ -1,9 +1,9 @@
 from mongoengine import StringField
 
-from models.common import Common
+from mongoengine import Document
 
 
-class Size(Common):
+class Size(Document):
     name = StringField()
     size = StringField()
 

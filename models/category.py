@@ -1,8 +1,8 @@
-from models.common import Common
+from mongoengine_goodjson import Document
 from mongoengine import StringField, BooleanField
 
 
-class Category(Common):
+class Category(Document):
     """Category model"""
     name = StringField()
     description = StringField()

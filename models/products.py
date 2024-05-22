@@ -1,9 +1,9 @@
 from mongoengine import DateTimeField, StringField, FloatField, BooleanField, IntField, ImageField
 
-from models.common import Common
+from mongoengine_goodjson import Document
 
 
-class Products(Common):
+class Products(Document):
     """Product Model"""
     name = StringField()
     price = FloatField()

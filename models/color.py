@@ -1,9 +1,9 @@
 from mongoengine import StringField, IntField, BooleanField
 
-from models.common import Common
+from mongoengine_goodjson import Document
 
 
-class Color(Common):
+class Color(Document):
     """Color model"""
     name = StringField()
     color = StringField()

@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-
 from mongoengine import connect
 
 load_dotenv()
@@ -16,5 +15,6 @@ def get_db_connection_url() -> str:
 def db_config() -> None:
     try:
         uri: str = get_db_connection_url()
+        connect(host=uri)
     except Exception as err:
-        print(err)
+        raise ValueError(str(err))
