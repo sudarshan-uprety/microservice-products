@@ -5,7 +5,7 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
 import json
 
 
-def handler(event: LambdaContext, context: LambdaContext):
+def main(event: LambdaContext, context: LambdaContext):
     path = event.get("path")
 
     if "/delete/product" in path:

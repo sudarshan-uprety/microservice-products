@@ -1,0 +1,33 @@
+  getProduct:
+    handler: functions/product/getProduct.main
+    events:
+      - http:
+          path: get/products
+          method: get
+      - http:
+          path: get/product/{id}
+          method: get
+      - http:
+          path: get/my/products
+          method: get
+
+  createProduct:
+    handler: functions/product/createProduct.main
+    events:
+      - http:
+          path: create/product
+          method: post
+
+  updateProduct:
+    handler: functions/product/updateProduct.main
+    events:
+      - http:
+          path: update/product/{id}
+          method: put
+
+  deleteProduct:
+    handler: functions/product/deleteProduct.main
+    events:
+      - http:
+          path: delete/product/{id}
+          method: delete

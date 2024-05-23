@@ -11,39 +11,8 @@ plugins:
   - serverless-offline
 
 functions:
-  getProduct:
-    handler: functions/product/getProduct.handler
-    events:
-      - http:
-          path: get/products
-          method: get
-      - http:
-          path: get/product/{id}
-          method: get
-      - http:
-          path: get/my/products
-          method: get
+  - ${file(functions/product/index.yml)}
 
-  createProduct:
-    handler: functions/product/createProduct.handler
-    events:
-      - http:
-          path: create/product
-          method: post
-
-  updateProduct:
-    handler: functions/product/updateProduct.handler
-    events:
-      - http:
-          path: update/product/{id}
-          method: put
-
-  deleteProduct:
-    handler: functions/product/deleteProduct.handler
-    events:
-      - http:
-          path: delete/product/{id}
-          method: delete
 
 custom:
   serverless-offline:

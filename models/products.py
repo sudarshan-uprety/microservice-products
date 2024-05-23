@@ -8,11 +8,13 @@ class Products(Document):
     name = StringField()
     price = FloatField()
     description = StringField()
-    image = ImageField()
+    image = StringField()
     category = StringField()
     stock = IntField()
     status = BooleanField()
     vendor = StringField()
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
 
     meta = {"collection": "products"}
 

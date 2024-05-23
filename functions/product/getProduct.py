@@ -5,7 +5,7 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
 import json
 
 
-def handler(event: APIGatewayProxyEventV2, context: LambdaContext):
+def main(event: APIGatewayProxyEventV2, context: LambdaContext):
     path = event.get("path")
 
     if path == "/get/products":

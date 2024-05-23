@@ -17,4 +17,5 @@ def db_config() -> None:
         uri: str = get_db_connection_url()
         connect(host=uri)
     except Exception as err:
+        connect("mongoenginetest", host="mongomock://localhost")
         raise ValueError(str(err))
