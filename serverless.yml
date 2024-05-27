@@ -12,6 +12,7 @@ plugins:
 
 functions:
   - ${file(functions/product/index.yml)}
+  - ${file(functions/size/index.yml)}
 
 
 custom:

@@ -1,11 +1,12 @@
-from mongoengine import StringField
+from mongoengine import StringField, DateTimeField
 
 from mongoengine import Document
 
 
 class Size(Document):
     name = StringField()
-    size = StringField()
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
 
     meta = {"collection": "sizes"}
 

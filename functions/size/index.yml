@@ -1,0 +1,31 @@
+  getSize:
+    handler: functions/size/getSize.main
+    events:
+      - http:
+          path: get/sizes
+          method: get
+      - http:
+          path: get/size/{id}
+          method: get
+
+
+  createSize:
+    handler: functions/size/createSize.main
+    events:
+      - http:
+          path: create/size
+          method: post
+
+  updateSize:
+    handler: functions/size/updateSize.main
+    events:
+      - http:
+          path: update/size/{id}
+          method: put
+
+  deleteSize:
+    handler: functions/size/deleteSize.main
+    events:
+      - http:
+          path: delete/size/{id}
+          method: delete

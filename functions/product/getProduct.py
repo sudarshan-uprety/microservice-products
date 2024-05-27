@@ -1,8 +1,13 @@
+import json
+
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import (
     APIGatewayProxyEventV2,
 )
-import json
+
+
+from utils.database import db_config
+from models.products import Products
 
 
 def main(event: APIGatewayProxyEventV2, context: LambdaContext):
@@ -25,19 +30,29 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
 
 
 def get_all_products(event: APIGatewayProxyEventV2, context: LambdaContext):
-    print("Fetching all products")
+    # call the db
+    db_config()
+
+    products = Products.objects.exclude('created_at', 'updated_at').to_json()
+    products_json = json.loads(products)
+
     return {
         "statusCode": 200,
-        "body": json.dumps({"message": "Fetched all products"})
+        "body": json.dumps({"data": products_json})
     }
 
 
 def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):
     product_id = event.get("pathParameters", {}).get("id")
-    print(f"Fetching product with ID: {product_id}")
+
+    db_config()
+
+    product = Products.objects.get(id=product_id).to_json()
+    products_json = json.loads(product)
+
     return {
         "statusCode": 200,
-        "body": json.dumps({"message": f"Fetched product with ID: {product_id}"})
+        "body": json.dumps({"data": products_json})
     }
 
 
