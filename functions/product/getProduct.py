@@ -8,8 +8,10 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
 
 from utils.database import db_config
 from models.products import Products
+from utils.exception_decorator import error_handler
 
 
+@error_handler
 def main(event: APIGatewayProxyEventV2, context: LambdaContext):
     path = event.get("path")
 

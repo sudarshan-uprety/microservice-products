@@ -1,5 +1,5 @@
 from mongoengine_goodjson import Document
-from mongoengine import StringField, BooleanField
+from mongoengine import StringField, BooleanField, DateTimeField
 
 
 class Category(Document):
@@ -7,6 +7,8 @@ class Category(Document):
     name = StringField()
     description = StringField()
     status = BooleanField(default=True)
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
 
     meta = {"collection": "categories"}
 

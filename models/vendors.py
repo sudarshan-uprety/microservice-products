@@ -4,7 +4,7 @@ from mongoengine import Document
 
 
 class Vendors(Document):
-    user_id = ReferenceField(primary_key=True)
+    user_id = str
 
     meta = {"collection": "vendors"}
 

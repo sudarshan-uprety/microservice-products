@@ -1,0 +1,6 @@
+  createCategory:
+    handler: functions/category/createCategory.main
+    events:
+      - http:
+          path: create/category
+          method: post
