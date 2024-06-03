@@ -40,18 +40,18 @@ def create_category(event: LambdaContext, context: LambdaContext):
 
     category_details = json.loads(body)
 
-    # Add timestamps
-    category_details['created_at'] = datetime.utcnow()
-    category_details['updated_at'] = datetime.utcnow()
-
     db_config()
 
     # validation for incoming product data.
     input_data = CategoryCreate(**category_details)
 
-    # Create and save the category
-    product = Category(**input_data.dict())
-    product.save()
+    # Create the category
+    category = Category(**input_data.dict())
+
+    # add the timestamp and save
+    category.created_at = datetime.utcnow()
+    category.updated_at = datetime.utcnow()
+    category.save()
 
     # Return success response
     return respond_success(
