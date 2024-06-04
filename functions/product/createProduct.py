@@ -45,12 +45,8 @@ def create_product(event: LambdaContext, context: LambdaContext):
     # validation for incoming product data.
     input_data = ProductCreate(**product_details)
 
-    # Create the product
+    # Create product obj and save
     product = Products(**input_data.dict())
-
-    # add the timestamp and save
-    product.created_at = datetime.utcnow()
-    product.updated_at = datetime.utcnow()
     product.save()
 
     # response data

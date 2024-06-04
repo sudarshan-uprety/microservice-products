@@ -2,9 +2,10 @@ from mongoengine import DateTimeField, StringField, FloatField, BooleanField, In
 from mongoengine_goodjson import Document
 
 from models import category, size, color
+from models.base import CommonDocument
 
 
-class Products(Document):
+class Products(CommonDocument):
     """Product Model"""
     name = StringField()
     price = FloatField()
@@ -16,8 +17,8 @@ class Products(Document):
     size = ReferenceField(size.Size)
     color = ReferenceField(color.Color)
     vendor = StringField()
-    created_at = DateTimeField()
-    updated_at = DateTimeField()
+    # created_at = DateTimeField()
+    # updated_at = DateTimeField()
 
     meta = {"collection": "products"}
 

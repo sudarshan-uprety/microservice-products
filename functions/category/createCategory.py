@@ -45,12 +45,8 @@ def create_category(event: LambdaContext, context: LambdaContext):
     # validation for incoming product data.
     input_data = CategoryCreate(**category_details)
 
-    # Create the category
+    # Create category obj and save
     category = Category(**input_data.dict())
-
-    # add the timestamp and save
-    category.created_at = datetime.utcnow()
-    category.updated_at = datetime.utcnow()
     category.save()
 
     # Return success response

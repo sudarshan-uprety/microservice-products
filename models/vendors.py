@@ -1,9 +1,10 @@
 from mongoengine import ReferenceField
-
 from mongoengine import Document
 
+from models.base import CommonDocument
 
-class Vendors(Document):
+
+class Vendors(CommonDocument):
     user_id = str
 
     meta = {"collection": "vendors"}
