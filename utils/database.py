@@ -1,12 +1,9 @@
-import os
-from dotenv import load_dotenv
 from mongoengine import connect
 
-load_dotenv()
-
+from utils import variables
 
 def get_db_connection_url() -> str:
-    url = os.getenv("DB")
+    url = variables.DB
     if url is None:
         raise ValueError("DB URL not defined")
     return url

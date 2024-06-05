@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 

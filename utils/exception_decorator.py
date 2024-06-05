@@ -2,6 +2,7 @@ import json
 
 from mongoengine.errors import DoesNotExist, FieldDoesNotExist, ValidationError
 from pydantic import ValidationError as PydanticError
+import botocore.exceptions
 
 from utils import constant, response, helpers
 from utils.exception import ServerError, CustomException
@@ -36,6 +37,12 @@ def error_handler(func):
             msg = helpers.pydantic_error(err)
             return response.error_response(
                 status_code=constant.ERROR_BAD_REQUEST, message=msg, errors=[]
+            )
+        except botocore.exceptions.ClientError as err:
+            return response.error_response(
+                status_code=err.response['ResponseMetadata']['HTTPStatusCode'],
+                message=str(err.response["Error"]["Message"]),
+                errors=str(err)
             )
         return to_return
     return validate

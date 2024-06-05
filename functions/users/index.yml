@@ -1,0 +1,16 @@
+  registerUser:
+    handler: functions/users/registerUser.main
+    events:
+      - http:
+          path: register/user
+          method: post
+      - http:
+          path: verify/user
+          method: post
+
+  loginUser:
+    handler: functions/users/loginUser.main
+    events:
+      - http:
+          path: user/login
+          method: post
