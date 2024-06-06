@@ -63,7 +63,7 @@ def register_user(event: LambdaContext, context: LambdaContext):
             },
             {
                 'Name': 'phone_number',
-                'Value': "+9779845522652"
+                'Value': input_data.phone
             },
             {
                 'Name': 'address',
