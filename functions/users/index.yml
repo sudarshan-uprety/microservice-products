@@ -28,3 +28,52 @@
       - http:
           path: user/new/token
           method: post
+
+  logoutUser:
+    handler: functions/users/loginUser.main
+    events:
+      - http:
+          path: user/logout
+          method: post
+
+  changePassword:
+    handler: functions/users/updateUser.main
+    events:
+      - http:
+          path: user/change/password
+          method: post
+
+#  updateEmail:
+#    handler: functions/users/updateUser.main
+#    events:
+#      - http:
+#          path: user/update/email
+#          method: post
+
+  updatePhone:
+    handler: functions/users/updateUser.main
+    events:
+      - http:
+          path: user/update/phone
+          method: post
+
+  updateAddress:
+    handler: functions/users/updateUser.main
+    events:
+      - http:
+          path: user/update/address
+          method: post
+
+  updateName:
+    handler: functions/users/updateUser.main
+    events:
+      - http:
+          path: user/update/name
+          method: post
+
+#  updateUserName:
+#    handler: functions/users/updateUser.main
+#    events:
+#      - http:
+#          path: user/update/username
+#          method: post

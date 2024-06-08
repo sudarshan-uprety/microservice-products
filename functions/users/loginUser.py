@@ -1,6 +1,3 @@
-import json
-import os
-
 import boto3
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
@@ -20,6 +17,8 @@ def main(event: LambdaContext, context: LambdaContext):
         return user_details(event, context)
     elif path == "/user/new/token":
         return refresh_token(event, context)
+    elif path == "/user/logout":
+        return user_logout(event, context)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -96,6 +95,8 @@ def user_details(event: LambdaContext, context: LambdaContext):
 
 def refresh_token(event: LambdaContext, context: LambdaContext):
     input_data = helpers.load_json(event=event)
+
+    # validate incoming data
     token_detail = user.NewAccessToken(**input_data)
 
     client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
@@ -119,3 +120,27 @@ def refresh_token(event: LambdaContext, context: LambdaContext):
         message="Fetched new access token",
         warning=None
     )
+
+
+def user_logout(event: LambdaContext, context: LambdaContext):
+    input_data = helpers.load_json(event=event)
+
+    # validate incoming data
+    token_detail = user.Logout(**input_data)
+
+    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+
+    response = client.global_sign_out(
+        AccessToken=token_detail.access_token
+    )
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return respond_success(
+            success=True,
+            status_code=constant.SUCCESS_RESPONSE,
+            data=None,
+            message="User logged out",
+            warning=None
+        )
+
+    # else condition will be handler by @error_handler decorator.

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator, ValidationError
+from pydantic import BaseModel, EmailStr, field_validator, ValidationError, validator
 
 
 class UserRegister(BaseModel):
@@ -61,4 +61,52 @@ class NewAccessToken(BaseModel):
 
 
 class NewAccessTokenResponse(BaseModel):
+    access_token: str
+
+
+class Logout(BaseModel):
+    access_token: str
+
+
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_password: str
+    access_token: str
+
+    @field_validator('new_password')
+    def current_password_validator(cls, value):
+        if len(value) < 8:
+            raise ValueError('Current password must be at least 8 characters long')
+        return value
+
+    @field_validator('confirm_password')
+    def passwords_match(cls, value, values):
+        if value != values.data.get('new_password'):
+            raise ValueError('Password and confirm password do not match')
+        return value
+
+
+class UpdateEmail(BaseModel):
+    email: EmailStr
+    access_token: str
+
+
+class UpdateName(BaseModel):
+    name: str
+    access_token: str
+
+
+class UpdatePhone(BaseModel):
+    phone: str
+    access_token: str
+
+
+class UpdateAddress(BaseModel):
+    address: str
+    access_token: str
+
+
+class UpdateUserName(BaseModel):
+    username: str
     access_token: str
