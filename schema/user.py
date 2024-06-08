@@ -54,3 +54,11 @@ class UserDetailResponse(BaseModel):
     email: str
     phone: str
     address: str
+
+
+class NewAccessToken(BaseModel):
+    refresh_token: str
+
+
+class NewAccessTokenResponse(BaseModel):
+    access_token: str

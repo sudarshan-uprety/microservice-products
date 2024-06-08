@@ -21,3 +21,10 @@
       - http:
           path: user/detail
           method: post
+
+  newAccessToken:
+    handler: functions/users/loginUser.main
+    events:
+      - http:
+          path: user/new/token
+          method: post

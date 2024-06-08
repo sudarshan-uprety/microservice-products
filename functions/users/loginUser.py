@@ -18,6 +18,8 @@ def main(event: LambdaContext, context: LambdaContext):
         return login_user(event, context)
     elif path == "/user/detail":
         return user_details(event, context)
+    elif path == "/user/new/token":
+        return refresh_token(event, context)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -88,5 +90,32 @@ def user_details(event: LambdaContext, context: LambdaContext):
         success=True,
         data=user_detail_response.dict(),
         message="Fetched user details",
+        warning=None
+    )
+
+
+def refresh_token(event: LambdaContext, context: LambdaContext):
+    input_data = helpers.load_json(event=event)
+    token_detail = user.NewAccessToken(**input_data)
+
+    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+
+    response = client.initiate_auth(
+        ClientId=variables.CognitoClientId,
+        AuthFlow='REFRESH_TOKEN_AUTH',
+        AuthParameters={
+            'REFRESH_TOKEN': token_detail.refresh_token
+        }
+    )
+
+    response_access_token = user.NewAccessTokenResponse(
+        access_token=response['AuthenticationResult']['AccessToken']
+    )
+
+    return respond_success(
+        success=True,
+        status_code=constant.SUCCESS_RESPONSE,
+        data=response_access_token.dict(),
+        message="Fetched new access token",
         warning=None
     )
