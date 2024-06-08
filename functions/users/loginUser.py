@@ -7,7 +7,7 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 from schema import user
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, variables
+from utils import constant, variables, helpers
 
 
 @error_handler
@@ -16,6 +16,8 @@ def main(event: LambdaContext, context: LambdaContext):
 
     if path == "/user/login":
         return login_user(event, context)
+    elif path == "/user/detail":
+        return user_details(event, context)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -27,20 +29,10 @@ def main(event: LambdaContext, context: LambdaContext):
 
 
 def login_user(event: LambdaContext, context: LambdaContext):
-    body = event.get('body')
+    input_data = helpers.load_json(event=event)
 
-    if not body:
-        return respond_error(
-            status_code=400,
-            message="Missing body",
-            data=None,
-            success=False
-        )
-
-    login_details = json.loads(body)
-
-    # validation for incoming product data.
-    input_data = user.Login(**login_details)
+    # validation for incoming data.
+    login_detail = user.Login(**input_data)
 
     # create a boto3 object
     client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
@@ -50,8 +42,8 @@ def login_user(event: LambdaContext, context: LambdaContext):
         ClientId=variables.CognitoClientId,
         AuthFlow='USER_PASSWORD_AUTH',
         AuthParameters={
-            'USERNAME': input_data.username,
-            'PASSWORD': input_data.password
+            'USERNAME': login_detail.username,
+            'PASSWORD': login_detail.password
         }
     )
 
@@ -65,4 +57,36 @@ def login_user(event: LambdaContext, context: LambdaContext):
             },
         warning=None,
         message="Fetched access and refresh token",
+    )
+
+
+def user_details(event: LambdaContext, context: LambdaContext):
+    input_data = helpers.load_json(event=event)
+
+    # validation for incoming data.
+    user_detail = user.GetUserDetail(**input_data)
+
+    # boto client
+    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+
+    response = client.get_user(
+        AccessToken=user_detail.access_token,
+    )
+
+    user_attributes = {attr['Name']: attr['Value'] for attr in response['UserAttributes']}
+
+    user_detail_response = user.UserDetailResponse(
+        username=response['Username'],
+        email=user_attributes.get('email', ''),
+        phone=user_attributes.get('phone_number', ''),
+        address=user_attributes.get('address', ''),
+        name=user_attributes.get('name', ''),
+    )
+
+    return respond_success(
+        status_code=constant.SUCCESS_RESPONSE,
+        success=True,
+        data=user_detail_response.dict(),
+        message="Fetched user details",
+        warning=None
     )

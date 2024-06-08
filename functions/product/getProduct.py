@@ -59,7 +59,6 @@ def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):
 
 
 def get_my_products(event: APIGatewayProxyEventV2, context: LambdaContext):
-    print("Fetching my products")
     return {
         "statusCode": 200,
         "body": json.dumps({"message": "Fetched my products"})

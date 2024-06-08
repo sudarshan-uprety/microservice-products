@@ -29,7 +29,6 @@ def error_handler(func):
                 status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=constant.ERROR_SERVER_DOWN
             )
         except CustomException as err:
-            print('hey', err)
             return response.error_response(
                 status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=err.args[0]
             )

@@ -14,3 +14,10 @@
       - http:
           path: user/login
           method: post
+
+  userDetail:
+    handler: functions/users/loginUser.main
+    events:
+      - http:
+          path: user/detail
+          method: post

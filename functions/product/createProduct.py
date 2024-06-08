@@ -4,10 +4,10 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.products import Products
 from utils.database import db_config
-from schema.product import ProductCreate
+from schema.product import ProductCreate, ProductCreateUpdateResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant
+from utils import constant, helpers
 
 
 @error_handler
@@ -27,35 +27,36 @@ def main(event: LambdaContext, context: LambdaContext):
 
 
 def create_product(event: LambdaContext, context: LambdaContext):
-    body = event.get('body')
-
-    if not body:
-        return respond_error(
-            status_code=400,
-            message="Missing body",
-            data=None,
-            success=False
-        )
-
-    product_details = json.loads(body)
+    input_data = helpers.load_json(event=event)
 
     db_config()
 
-    # validation for incoming product data.
-    input_data = ProductCreate(**product_details)
+    # validation for incoming data.
+    product_details = ProductCreate(**input_data)
 
     # Create product obj and save
-    product = Products(**input_data.dict())
+    product = Products(**product_details.dict())
     product.save()
 
     # response data
-    response_data = input_data.dict(exclude={'category'})
+    response_data = ProductCreateUpdateResponse(
+        id=str(product.id),
+        name=product.name,
+        description=product.description,
+        image=product.image,
+        price=product.price,
+        category=product.category.to_dict(),
+        status=product.status,
+        size=product.size.to_dict() if product.size else None,
+        color=product.color.to_dict() if product.color else None,
+        type=product.type.to_dict(),
+    )
 
     # Return success response
     return respond_success(
         status_code=constant.SUCCESS_CREATED,
         success=True,
-        data=response_data,
+        data=response_data.dict(),
         warning=None,
         message="Product created",
     )

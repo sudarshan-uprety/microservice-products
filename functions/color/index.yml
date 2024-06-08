@@ -1,0 +1,6 @@
+  createColor:
+    handler: functions/color/createColor.main
+    events:
+      - http:
+          path: create/color
+          method: post

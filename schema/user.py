@@ -43,3 +43,14 @@ class Login(BaseModel):
         if len(value) < 8:
             raise ValueError('Password must be at least 8 characters long')
         return value
+
+
+class GetUserDetail(BaseModel):
+    access_token: str
+
+
+class UserDetailResponse(BaseModel):
+    username: str
+    email: str
+    phone: str
+    address: str

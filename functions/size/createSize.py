@@ -5,10 +5,13 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 from pydantic import ValidationError
 
 from models.size import Size
-from schema.size import SizeCreate
+from schema.size import SizeCreate, SizeCreateUpdateResponse
 from utils.database import db_config
+from utils.exception_decorator import error_handler
+from utils import helpers, response
 
 
+@error_handler
 def main(event: LambdaContext, context: LambdaContext):
     path = event.get("path")
 
@@ -22,40 +25,28 @@ def main(event: LambdaContext, context: LambdaContext):
 
 
 def create_size(event: LambdaContext, context: LambdaContext):
-    try:
-        size_details = json.loads(event['body'])
-    except Exception as e:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "Empty body"})
-        }
+    input_data = helpers.load_json(event=event)
 
-    try:
-        size_input = SizeCreate(**size_details)
-    except ValidationError as e:
-        error_dict = {}
-        for error in e.errors():
-            field = error['loc'][-1]
-            message = error['msg']
-            error_dict[field] = message
-
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": error_dict})
-        }
-
-    # Add timestamps
-    size_details['created_at'] = datetime.utcnow()
-    size_details['updated_at'] = datetime.utcnow()
+    # validate incoming data
+    size_detail = SizeCreate(**input_data)
 
     db_config()
 
     # Create and save the product
-    size = Size(**size_details)
+    size = Size(**size_detail.dict())
     size.save()
 
+    response_data = SizeCreateUpdateResponse(
+        id=str(size.id),
+        name=size_detail.name,
+        description=size_detail.description,
+        status=size_detail.status
+    )
+
     # Return success response
-    return {
-        "statusCode": 201,
-        "body": json.dumps({"message": "size created", "details": {'size_name': size.name}})
-    }
+    return response.success_response(
+        status_code=201,
+        message='Successfully created size',
+        data=response_data.dict(),
+        warning=None
+    )

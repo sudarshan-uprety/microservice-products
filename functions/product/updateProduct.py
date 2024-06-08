@@ -19,7 +19,6 @@ def main(event: LambdaContext, context: LambdaContext):
 
 def update_product(event: LambdaContext, context: LambdaContext):
     product_id = event.get("pathParameters", {}).get("id")
-    print(product_id)
     return {
         "statusCode": 200,
         "body": json.dumps({"message": "product updated"})

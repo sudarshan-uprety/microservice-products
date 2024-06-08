@@ -1,5 +1,7 @@
 import json
 
+from utils.response import respond_error
+
 
 def pydantic_error(err):
     errors_list = json.loads(err.json())
@@ -57,3 +59,18 @@ def pydantic_error(err):
                     error["loc"][0].capitalize() + " " + error["msg"] + "."
                 )
     return msg
+
+
+def load_json(event):
+    body = event.get('body')
+
+    if not body:
+        return respond_error(
+            status_code=400,
+            message="Missing body",
+            data=None,
+            success=False
+        )
+
+    input_data = json.loads(body)
+    return input_data

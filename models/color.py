@@ -7,7 +7,6 @@ from models.base import CommonDocument
 class Color(CommonDocument):
     """Color model"""
     name = StringField()
-    color = StringField()
     hex = StringField()
     status = BooleanField(default=True)
 
@@ -15,3 +14,11 @@ class Color(CommonDocument):
 
     def __str__(self):
         return self.name
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "hex": self.hex,
+            "status": self.status,
+        }

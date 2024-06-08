@@ -1,14 +1,14 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 
-class CategoryCreate(BaseModel):
+class CreateType(BaseModel):
     """schema for product model"""
     name: str
     description: str
     status: bool
 
 
-class CategoryCreateUpdateResponse(BaseModel):
+class CreateUpdateTypeResponse(BaseModel):
     id: str
     name: str
     description: str

@@ -1,0 +1,6 @@
+  createType:
+    handler: functions/type/createType.main
+    events:
+      - http:
+          path: create/type
+          method: post

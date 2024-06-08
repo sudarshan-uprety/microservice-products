@@ -48,6 +48,8 @@ functions:
   - ${file(functions/category/index.yml)}
   - ${file(functions/size/index.yml)}
   - ${file(functions/users/index.yml)}
+  - ${file(functions/type/index.yml)}
+  - ${file(functions/color/index.yml)}
 
 custom:
   serverless-offline:
