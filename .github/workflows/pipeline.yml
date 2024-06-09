@@ -1,0 +1,63 @@
+name: Deploy serverless app
+
+on:
+  push:
+    branches:
+      - dev
+      - uat
+      - prod
+
+jobs:
+  deploy:
+    name: Deploy to AWS Lambda
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.10]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache Python Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: python-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            python-${{ runner.os }}-
+
+      - name: Install Python Requirements
+        run: pip install -r requirements.txt
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Deploy using Serverless Framework
+        env:
+          AWS_ACCESS_KEY_ID_DEV: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY_DEV: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_ACCESS_KEY_ID_UAT: ${{ secrets.AWS_ACCESS_KEY_ID_UAT }}
+          AWS_SECRET_ACCESS_KEY_UAT: ${{ secrets.AWS_SECRET_ACCESS_KEY_UAT }}
+          AWS_ACCESS_KEY_ID_PROD: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          AWS_SECRET_ACCESS_KEY_PROD: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+            serverless deploy --stage dev
+#          elif [ "${{ github.ref }}" == "refs/heads/uat" ]; then
+#            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_UAT }}
+#            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_UAT }}
+#            serverless deploy --stage uat
+#          elif [ "${{ github.ref }}" == "refs/heads/prod" ]; then
+#            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+#            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+#            serverless deploy --stage prod
+          else
+            echo "Skipping deployment for branch: ${{ github.ref }}"
+          fi
