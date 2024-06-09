@@ -34,8 +34,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
         aws-region: ap-south-1
 
-    - name: deploy
+    - name: Zip Python code
       run: |
-        npx ncc build index.ts
-        zip -j deploy.zip ./dist/*
+        zip -r deploy.zip ./functions ./models ./schema ./utils
+
+    - name: Deploy
+      run: |
         aws lambda update-function-code --function-name=lambda-gh-action --zip-file=fileb://deploy.zip
