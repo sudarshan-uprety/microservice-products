@@ -13,3 +13,10 @@ class CreateUpdateTypeResponse(BaseModel):
     name: str
     description: str
     status: bool
+
+
+class UpdateType(BaseModel):
+    id: str
+    name: str
+    description: str
+    status: bool

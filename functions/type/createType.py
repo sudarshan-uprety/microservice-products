@@ -2,10 +2,10 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.type import Type
 from utils.database import db_config
-from schema.type import CreateType, CreateUpdateTypeResponse
+from schema.type import CreateType, CreateUpdateTypeResponse, UpdateType
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, helpers
+from utils import constant, helpers, get_obj
 
 
 @error_handler
@@ -14,6 +14,8 @@ def main(event: LambdaContext, context: LambdaContext):
 
     if path == "/create/type":
         return create_type(event, context)
+    elif path == "/update/type":
+        return update_type(event, context)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -27,10 +29,10 @@ def main(event: LambdaContext, context: LambdaContext):
 def create_type(event: LambdaContext, context: LambdaContext):
     input_data = helpers.load_json(event=event)
 
-    db_config()
-
     # validation for incoming product data.
     type_data = CreateType(**input_data)
+
+    db_config()
 
     # Create Type obj and save
     types = Type(**type_data.dict())

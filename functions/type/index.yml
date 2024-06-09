@@ -4,3 +4,17 @@
       - http:
           path: create/type
           method: post
+
+  updateType:
+    handler: functions/type/updateType.main
+    events:
+      - http:
+          path: type/update
+          method: post
+
+  deleteType:
+    handler: functions/type/deleteType.main
+    events:
+      - http:
+          path: type/delete/{id}
+          method: delete
