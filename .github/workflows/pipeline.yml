@@ -36,15 +36,15 @@ jobs:
           npm install -g serverless@latest
           npm install -g serverless-python-requirements@latest
 
-      - name: Install Serverless Plugins
-        run: |
-          plugins=("serverless-deployment-bucket" "serverless-iam-roles-per-function" "serverless-python-requirements")  # Add your plugin names
-          for plugin in "${plugins[@]}"; do
-            sls plugin install --name $plugin
-          done
+#      - name: Install Serverless Plugins
+#        run: |
+#          plugins=("serverless-deployment-bucket" "serverless-iam-roles-per-function" "serverless-python-requirements")  # Add your plugin names
+#          for plugin in "${plugins[@]}"; do
+#            sls plugin install --name $plugin
+#          done
 
-      - name: Configure Serverless Framework credentials
-        run: serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID_DEV }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+#      - name: Configure Serverless Framework credentials
+#        run: serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID_DEV }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
 
 #      - name: Run Serverless Doctor
 #        run: serverless doctor
