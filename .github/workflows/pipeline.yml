@@ -18,7 +18,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Node.js
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Node.js and Serverless Framework
         uses: actions/setup-node@v3
         with:
           node-version: '19.x'
@@ -29,13 +34,8 @@ jobs:
       - name: Install Serverless Plugins
         run: |
           npm install serverless-python-requirements
-          npm install serverless-offline
           npm install serverless-iam-roles-per-function
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+          npm install serverless-offline
 
       - name: Install Python dependencies
         run: |
@@ -53,7 +53,5 @@ jobs:
           aws-region: ap-south-1
 
       - name: Deploy using Serverless Framework
-        env:
-          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_KEY_DEV }}
         run: |
           serverless deploy --stage ${GITHUB_REF##*/} --verbose
