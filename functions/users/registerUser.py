@@ -7,7 +7,7 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 from schema import user
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, variables
+from utils import constant, variables, helpers
 
 
 @error_handler
@@ -45,7 +45,7 @@ def register_user(event: LambdaContext, context: LambdaContext):
     input_data = user.UserRegister(**user_details)
 
     # create a boto3 object
-    client = boto3.client('cognito-idp',region_name=variables.CognitoRegionName)
+    client = helpers.boto3_client()
 
     # Register user in cognito
     response = client.sign_up(
@@ -97,7 +97,7 @@ def verify_user(event: LambdaContext, context: LambdaContext):
 
     input_data = user.VerifyEmail(**user_details)
 
-    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+    client = helpers.boto3_client()
 
     response = client.confirm_sign_up(
         ClientId=variables.CognitoClientId,

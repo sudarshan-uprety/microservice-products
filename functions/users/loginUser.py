@@ -36,7 +36,7 @@ def login_user(event: LambdaContext, context: LambdaContext):
     login_detail = user.Login(**input_data)
 
     # create a boto3 object
-    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+    client = helpers.boto3_client()
 
     # Register user in cognito
     response = client.initiate_auth(
@@ -68,7 +68,7 @@ def user_details(event: LambdaContext, context: LambdaContext):
     user_detail = user.GetUserDetail(**input_data)
 
     # boto client
-    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+    client = helpers.boto3_client()
 
     response = client.get_user(
         AccessToken=user_detail.access_token,
@@ -99,7 +99,7 @@ def refresh_token(event: LambdaContext, context: LambdaContext):
     # validate incoming data
     token_detail = user.NewAccessToken(**input_data)
 
-    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+    client = helpers.boto3_client()
 
     response = client.initiate_auth(
         ClientId=variables.CognitoClientId,
@@ -128,7 +128,7 @@ def user_logout(event: LambdaContext, context: LambdaContext):
     # validate incoming data
     token_detail = user.Logout(**input_data)
 
-    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+    client = helpers.boto3_client()
 
     response = client.global_sign_out(
         AccessToken=token_detail.access_token

@@ -43,13 +43,6 @@
           path: user/change/password
           method: post
 
-#  updateEmail:
-#    handler: functions/users/updateUser.main
-#    events:
-#      - http:
-#          path: user/update/email
-#          method: post
-
   updatePhone:
     handler: functions/users/updateUser.main
     events:
@@ -71,9 +64,16 @@
           path: user/update/name
           method: post
 
-#  updateUserName:
-#    handler: functions/users/updateUser.main
-#    events:
-#      - http:
-#          path: user/update/username
-#          method: post
+  forgetPassword:
+    handler: functions/users/updateUser.main
+    events:
+      - http:
+          path: user/forget/password
+          method: post
+
+  confirmForgetPassword:
+    handler: functions/users/updateUser.main
+    events:
+      - http:
+          path: user/confirm/forget/password
+          method: post

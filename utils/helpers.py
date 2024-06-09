@@ -1,6 +1,8 @@
 import json
+import boto3
 
 from utils.response import respond_error
+from utils import variables
 
 
 def pydantic_error(err):
@@ -74,3 +76,8 @@ def load_json(event):
 
     input_data = json.loads(body)
     return input_data
+
+
+def boto3_client():
+    client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+    return client

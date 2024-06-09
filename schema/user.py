@@ -110,3 +110,26 @@ class UpdateAddress(BaseModel):
 class UpdateUserName(BaseModel):
     username: str
     access_token: str
+
+
+class ForgetPassword(BaseModel):
+    username: str
+
+
+class ForgetPasswordConfirm(BaseModel):
+    password: str
+    confirm_password: str
+    code: str
+    username: str
+
+    @field_validator('password')
+    def password_validator(cls, value):
+        if len(value) < 8:
+            raise ValueError('Password must be at least 8 characters long')
+        return value
+
+    @field_validator('confirm_password')
+    def passwords_match(cls, value, values):
+        if value != values.data.get('password'):
+            raise ValueError('Password and confirm password do not match')
+        return value
