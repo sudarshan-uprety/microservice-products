@@ -27,6 +27,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Create .env file from GitHub secret
+      run: echo "${{ secrets.DEV_ENV }}" > .env
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -36,8 +39,8 @@ jobs:
 
     - name: Zip Python code
       run: |
-        zip -r deploy.zip ./functions ./models ./schema ./utils
+        zip -r deploy.zip .env ./functions ./models ./schema ./utils
 
     - name: Deploy
       run: |
-        aws lambda update-function-code --function-name=lambda-gh-action --zip-file=fileb://deploy.zip
+        aws lambda update-function-code --function-name=main --zip-file fileb://deploy.zip
