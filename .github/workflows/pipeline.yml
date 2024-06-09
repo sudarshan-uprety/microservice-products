@@ -28,7 +28,6 @@ jobs:
 
       - name: Install Serverless Plugins
         run: |
-#          npm install serverless-python-requirements
           npm install serverless-offline
           npm install serverless-iam-roles-per-function
 
