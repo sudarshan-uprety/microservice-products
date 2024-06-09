@@ -21,7 +21,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: [19.x]
+          node-version: '19.x'
 
       - name: Install Serverless Framework
         run: npm install -g serverless
