@@ -15,32 +15,39 @@ jobs:
         python-version: ['3.10']
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install Serverless Framework
-      run: |
-        npm install -g serverless
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Adjust to a stable Node.js version as needed
 
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install Serverless Framework
+        run: npm install -g serverless
 
-    - name: Create .env file from GitHub secret
-      run: echo "${{ secrets.DEV_ENV }}" > .env
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-        aws-region: ap-south-1
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Zip Python code
-      run: |
-        zip -r deploy.zip .env ./functions ./models ./schema ./utils
+      - name: Create .env file from GitHub secret
+        run: echo "${{ secrets.DEV_ENV }}" > .env
 
-    - name: Deploy
-      run: |
-        aws lambda update-function-code --function-name=main --zip-file fileb://deploy.zip
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          aws-region: ap-south-1
+
+      - name: Deploy using Serverless Framework
+        run: |
+          serverless deploy --stage ${GITHUB_REF##*/} --verbose
+        env:
+          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
