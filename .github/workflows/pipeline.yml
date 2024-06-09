@@ -43,6 +43,9 @@ jobs:
             sls plugin install --name $plugin
           done
 
+      - name: Configure Serverless Framework credentials
+        run: serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID_DEV }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+
 #      - name: Run Serverless Doctor
 #        run: serverless doctor
 
