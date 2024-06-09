@@ -7,9 +7,12 @@ provider:
   region: ap-south-1
 
 plugins:
+  - serverless-aws-documentation
   - serverless-offline
-#  - serverless-python-requirements
-#  - serverless-iam-roles-per-function
+  - serverless-python-requirements
+  # - serverless-domain-manager
+  - serverless-iam-roles-per-function
+  - serverless-deployment-bucket
 
 functions:
   - ${file(functions/product/index.yml)}
