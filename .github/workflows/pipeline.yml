@@ -31,11 +31,20 @@ jobs:
           restore-keys: |
             python-${{ runner.os }}-
 
-      - name: Install Python Requirements
-        run: pip install -r requirements.txt
-
       - name: Install Serverless Framework
-        run: npm install -g serverless
+        run: |
+          npm install -g serverless@latest
+          npm install -g serverless-python-requirements@latest
+
+      - name: Install Serverless Plugins
+        run: |
+          plugins=("serverless-deployment-bucket" "serverless-iam-roles-per-function" "serverless-python-requirements")  # Add your plugin names
+          for plugin in "${plugins[@]}"; do
+            sls plugin install --name $plugin
+          done
+
+      - name: Run Serverless Doctor
+        run: serverless doctor
 
       - name: Deploy using Serverless Framework
         env:
