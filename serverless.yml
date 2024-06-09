@@ -8,10 +8,10 @@ provider:
 
 plugins:
 #  - serverless-aws-documentation
-  - serverless-offline
+#  - serverless-offline
   - serverless-python-requirements
   # - serverless-domain-manager
-  - serverless-iam-roles-per-function
+#  - serverless-iam-roles-per-function
 #  - serverless-deployment-bucket
 
 functions:
