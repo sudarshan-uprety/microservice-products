@@ -29,7 +29,7 @@ def create_category(event: LambdaContext, context: LambdaContext):
 
     db_config()
 
-    # validation for incoming product data.
+    # validation for incoming data.
     category_data = CategoryCreate(**input_data)
 
     # Create category obj and save
@@ -42,6 +42,7 @@ def create_category(event: LambdaContext, context: LambdaContext):
         description=category.description,
         status=category.status,
     )
+
     # Return success response
     return respond_success(
         data=category_response.dict(),
