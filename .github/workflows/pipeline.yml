@@ -43,8 +43,8 @@ jobs:
             sls plugin install --name $plugin
           done
 
-      - name: Run Serverless Doctor
-        run: serverless doctor
+#      - name: Run Serverless Doctor
+#        run: serverless doctor
 
       - name: Deploy using Serverless Framework
         env:
