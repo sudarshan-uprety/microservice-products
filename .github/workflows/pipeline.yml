@@ -42,15 +42,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Create .env file from GitHub secret
-        run: |
-          echo "${{ vars.DEV_ENV }}" > .env
-          if [ -f ".env" ]; then
-            echo ".env file has been created successfully."
-            echo "Contents of .env file:"
-            cat .env
-          else
-            echo "Failed to create .env file."
-          fi
+        run: echo "${{ vars.DEV_ENV }}" > .env
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
