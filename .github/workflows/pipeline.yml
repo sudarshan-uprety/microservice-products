@@ -26,6 +26,12 @@ jobs:
       - name: Install Serverless Framework
         run: npm install -g serverless
 
+      - name: Install Serverless Plugins
+        run: |
+          npm install serverless-python-requirements
+          npm install serverless-offline
+          npm install serverless-iam-roles-per-function
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
