@@ -1,4 +1,3 @@
-from mongoengine_goodjson import Document
 from mongoengine import StringField, BooleanField, DateTimeField
 
 from models.base import CommonDocument

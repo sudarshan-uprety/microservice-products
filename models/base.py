@@ -1,10 +1,11 @@
 from datetime import datetime
-from mongoengine import Document, DateTimeField
+from mongoengine import Document, DateTimeField, BooleanField
 
 
 class CommonDocument(Document):
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
+    is_deleted = BooleanField(default=False)
 
     meta = {'abstract': True}
 

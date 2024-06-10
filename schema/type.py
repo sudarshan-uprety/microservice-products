@@ -16,7 +16,6 @@ class CreateUpdateTypeResponse(BaseModel):
 
 
 class UpdateType(BaseModel):
-    id: str
     name: str
     description: str
     status: bool

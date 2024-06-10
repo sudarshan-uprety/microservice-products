@@ -8,6 +8,12 @@ class CreateColor(BaseModel):
     status: bool
 
 
+class ColorUpdate(BaseModel):
+    name: str
+    hex: str
+    status: bool
+
+
 class ColorCreateUpdateResponse(BaseModel):
     id: str
     name: str

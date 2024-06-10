@@ -7,6 +7,12 @@ class SizeCreate(BaseModel):
     status: bool
 
 
+class SizeUpdate(BaseModel):
+    name: str
+    description: str
+    status: bool
+
+
 class SizeCreateUpdateResponse(BaseModel):
     id: str
     name: str
