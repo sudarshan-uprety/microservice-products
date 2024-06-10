@@ -1,5 +1,6 @@
   getProduct:
     handler: functions/product/getProduct.main
+    memorySize: 128
     events:
       - http:
           path: get/products
@@ -13,6 +14,7 @@
 
   createProduct:
     handler: functions/product/createProduct.main
+    memorySize: 128
     events:
       - http:
           path: create/product
@@ -20,6 +22,7 @@
 
   updateProduct:
     handler: functions/product/updateProduct.main
+    memorySize: 128
     events:
       - http:
           path: update/product/{id}
@@ -27,6 +30,7 @@
 
   deleteProduct:
     handler: functions/product/deleteProduct.main
+    memorySize: 128
     events:
       - http:
           path: delete/product/{id}

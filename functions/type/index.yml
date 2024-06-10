@@ -1,5 +1,6 @@
   createType:
     handler: functions/type/createType.main
+    memorySize: 128
     events:
       - http:
           path: create/type
@@ -7,14 +8,16 @@
 
   updateType:
     handler: functions/type/updateType.main
+    memorySize: 128
     events:
       - http:
-          path: type/update
-          method: post
+          path: update/type/{id}
+          method: put
 
   deleteType:
     handler: functions/type/deleteType.main
+    memorySize: 128
     events:
       - http:
-          path: type/delete/{id}
+          path: delete/type/{id}
           method: delete

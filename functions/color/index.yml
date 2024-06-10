@@ -1,6 +1,23 @@
   createColor:
     handler: functions/color/createColor.main
+    memorySize: 128
     events:
       - http:
           path: create/color
           method: post
+
+  updateColor:
+    handler: functions/color/updateColor.main
+    memorySize: 128
+    events:
+      - http:
+          path: update/color/{id}
+          method: put
+
+  deleteColor:
+    handler: functions/color/deleteColor.main
+    memorySize: 128
+    events:
+      - http:
+          path: delete/color/{id}
+          method: delete

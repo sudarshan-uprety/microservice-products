@@ -8,6 +8,13 @@ class CategoryCreate(BaseModel):
     status: bool
 
 
+class CategoryUpdate(BaseModel):
+    """schema for updating category"""
+    name: str
+    description: str
+    status: bool
+
+
 class CategoryCreateUpdateResponse(BaseModel):
     id: str
     name: str

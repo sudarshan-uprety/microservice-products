@@ -4,3 +4,17 @@
       - http:
           path: create/category
           method: post
+
+  updateCategory:
+    handler: functions/category/updateCategory.main
+    events:
+      - http:
+          path: update/category/{id}
+          method: put
+
+  deleteCategory:
+    handler: functions/category/deleteCategory.main
+    events:
+      - http:
+          path: delete/category/{id}
+          method: delete
