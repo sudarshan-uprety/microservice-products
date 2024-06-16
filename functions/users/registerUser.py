@@ -7,7 +7,8 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 from schema import user
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, variables, helpers
+from utils import constant, variables, helpers, database
+from models import vendors
 
 
 @error_handler
@@ -69,17 +70,44 @@ def register_user(event: LambdaContext, context: LambdaContext):
                 'Name': 'address',
                 'Value': input_data.address
             }
+            # {
+            #     'Name': 'city',
+            #     'Value': input_data.city
+            # }
+            # {
+            #     'Name': 'state',
+            #     'Value': input_data.state
+            # }
         ]
     )
 
-    # Return success response
-    return respond_success(
-        status_code=constant.SUCCESS_CREATED,
-        success=True,
-        data=input_data.dict(exclude={'password', 'confirm_password'}),
-        warning=None,
-        message="User registered, please check your email for confirmation.",
-    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+
+        database.db_config()
+
+        vendor = vendors.Vendors(
+            id=response['UserSub'],
+            store_name=input_data.name,
+            address=input_data.address,
+            # city=input_data.city,
+            # state=input_data.state,
+            phone=input_data.phone,
+            email=input_data.email,
+            is_active=False
+        )
+        vendor.save()
+
+        response_data = user.UserRegister(**user_details)
+        print(response_data)
+
+        # Return success response
+        return respond_success(
+            status_code=constant.SUCCESS_CREATED,
+            success=True,
+            data=response_data.dict(),
+            warning=None,
+            message="User registered, please check your email for confirmation.",
+        )
 
 
 def verify_user(event: LambdaContext, context: LambdaContext):

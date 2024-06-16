@@ -6,6 +6,7 @@ from models.category import Category
 from models.color import Color
 from models.size import Size
 from models.type import Type
+from models.vendors import Vendors
 
 
 class ProductCreate(BaseModel):
@@ -19,6 +20,7 @@ class ProductCreate(BaseModel):
     status: bool
     size: Optional[str] = Field(default=None)
     color: Optional[str] = Field(default=None)
+    vendor: str
     type: str
 
     @validator('category')
@@ -37,9 +39,14 @@ class ProductCreate(BaseModel):
         return color
 
     @validator('type')
-    def validate_color(cls, value):
+    def validate_type(cls, value):
         types = Type.objects.get(id=value)
         return types
+
+    @validator('vendor')
+    def validate_vendor(cls, value):
+        vendor = Vendors.objects.get(id=value)
+        return vendor
 
 
 class ProductCreateUpdateResponse(BaseModel):

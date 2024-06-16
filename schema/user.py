@@ -8,6 +8,9 @@ class UserRegister(BaseModel):
     address: str
     password: str
     confirm_password: str
+    # city: str
+    # state: str
+    address: str
     username: str
 
     @field_validator('password')
@@ -21,6 +24,17 @@ class UserRegister(BaseModel):
         if value != values.data.get('password'):
             raise ValueError('Password and confirm password do not match')
         return value
+
+
+class UserRegisterResponse(BaseModel):
+    email: EmailStr
+    name: str
+    phone: str
+    address: str
+    city: str
+    state: str
+    address: str
+    username: str
 
 
 class VerifyEmail(BaseModel):
