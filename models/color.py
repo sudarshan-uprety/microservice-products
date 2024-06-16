@@ -1,5 +1,4 @@
 from mongoengine import StringField, IntField, BooleanField
-from mongoengine_goodjson import Document
 
 from models.base import CommonDocument
 

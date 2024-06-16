@@ -1,5 +1,6 @@
   registerUser:
     handler: functions/users/registerUser.main
+    memorySize: 128
     events:
       - http:
           path: register/user
@@ -10,6 +11,7 @@
 
   loginUser:
     handler: functions/users/loginUser.main
+    memorySize: 128
     events:
       - http:
           path: user/login
@@ -17,6 +19,7 @@
 
   userDetail:
     handler: functions/users/loginUser.main
+    memorySize: 128
     events:
       - http:
           path: user/detail
@@ -24,6 +27,7 @@
 
   newAccessToken:
     handler: functions/users/loginUser.main
+    memorySize: 128
     events:
       - http:
           path: user/new/token
@@ -31,6 +35,7 @@
 
   logoutUser:
     handler: functions/users/loginUser.main
+    memorySize: 128
     events:
       - http:
           path: user/logout
@@ -38,6 +43,7 @@
 
   changePassword:
     handler: functions/users/updateUser.main
+    memorySize: 128
     events:
       - http:
           path: user/change/password
@@ -45,6 +51,7 @@
 
   updatePhone:
     handler: functions/users/updateUser.main
+    memorySize: 128
     events:
       - http:
           path: user/update/phone
@@ -52,6 +59,7 @@
 
   updateAddress:
     handler: functions/users/updateUser.main
+    memorySize: 128
     events:
       - http:
           path: user/update/address
@@ -59,6 +67,7 @@
 
   updateName:
     handler: functions/users/updateUser.main
+    memorySize: 128
     events:
       - http:
           path: user/update/name
@@ -66,6 +75,7 @@
 
   forgetPassword:
     handler: functions/users/updateUser.main
+    memorySize: 128
     events:
       - http:
           path: user/forget/password
@@ -73,6 +83,7 @@
 
   confirmForgetPassword:
     handler: functions/users/updateUser.main
+    memorySize: 128
     events:
       - http:
           path: user/confirm/forget/password
