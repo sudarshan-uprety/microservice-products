@@ -1,5 +1,3 @@
-import json
-
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.products import Products

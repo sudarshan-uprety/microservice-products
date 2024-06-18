@@ -30,17 +30,7 @@ def main(event: LambdaContext, context: LambdaContext):
 
 
 def register_user(event: LambdaContext, context: LambdaContext):
-    body = event.get('body')
-
-    if not body:
-        return respond_error(
-            status_code=400,
-            message="Missing body",
-            data=None,
-            success=False
-        )
-
-    user_details = json.loads(body)
+    user_details = helpers.load_json(event=event)
 
     # validation for incoming product data.
     input_data = user.UserRegister(**user_details)
@@ -69,15 +59,15 @@ def register_user(event: LambdaContext, context: LambdaContext):
             {
                 'Name': 'address',
                 'Value': input_data.address
+            },
+            {
+                'Name': 'custom:city',
+                'Value': input_data.city
+            },
+            {
+                'Name': 'custom:state',
+                'Value': input_data.state
             }
-            # {
-            #     'Name': 'city',
-            #     'Value': input_data.city
-            # }
-            # {
-            #     'Name': 'state',
-            #     'Value': input_data.state
-            # }
         ]
     )
 
@@ -89,16 +79,15 @@ def register_user(event: LambdaContext, context: LambdaContext):
             id=response['UserSub'],
             store_name=input_data.name,
             address=input_data.address,
-            # city=input_data.city,
-            # state=input_data.state,
+            city=input_data.city,
+            state=input_data.state,
             phone=input_data.phone,
             email=input_data.email,
             is_active=False
         )
         vendor.save()
 
-        response_data = user.UserRegister(**user_details)
-        print(response_data)
+        response_data = user.UserRegisterResponse(**user_details)
 
         # Return success response
         return respond_success(
@@ -111,32 +100,39 @@ def register_user(event: LambdaContext, context: LambdaContext):
 
 
 def verify_user(event: LambdaContext, context: LambdaContext):
-    body = event.get('body')
+    input_data = helpers.load_json(event=event)
 
-    if not body:
-        return respond_error(
-            status_code=400,
-            message="Missing body",
-            data=None,
-            success=False
-
-        )
-    user_details = json.loads(body)
-
-    input_data = user.VerifyEmail(**user_details)
+    # validate incoming data
+    data = user.VerifyEmail(**input_data)
 
     client = helpers.boto3_client()
 
     response = client.confirm_sign_up(
         ClientId=variables.CognitoClientId,
-        Username=input_data.username,
-        ConfirmationCode=input_data.code
+        Username=data.username,
+        ConfirmationCode=data.code
     )
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        user_response = client.admin_get_user(
+            UserPoolId=variables.UserPoolID,
+            Username=data.username
+        )
+
+        for attr in user_response['UserAttributes']:
+            if attr['Name'] == 'sub':
+                user_id = attr['Value']
+                break
+
+        database.db_config()
+        vendor = vendors.Vendors.objects.get(id=user_id)
+        vendor.is_active = True
+        vendor.save()
 
     return respond_success(
         message="Email verification successful.",
         status_code=constant.SUCCESS_RESPONSE,
         success=True,
-        data=input_data.dict(exclude={'code'}),
+        data=None,
         warning=None
     )

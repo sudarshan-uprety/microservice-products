@@ -4,12 +4,12 @@ from mongoengine import StringField, BooleanField
 
 class Vendors(CommonDocument):
     id = StringField(primary_key=True)
-    store_name = str
-    address = str
-    city = str
-    state = str
-    phone = str
-    email = str
+    store_name = StringField()
+    address = StringField()
+    city = StringField()
+    state = StringField()
+    phone = StringField()
+    email = StringField()
     is_active = BooleanField(default=False)
 
     meta = {"collection": "vendors"}
