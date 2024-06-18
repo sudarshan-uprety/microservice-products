@@ -8,6 +8,9 @@ class UserRegister(BaseModel):
     address: str
     password: str
     confirm_password: str
+    city: str
+    state: str
+    address: str
     username: str
 
     @field_validator('password')
@@ -23,14 +26,25 @@ class UserRegister(BaseModel):
         return value
 
 
+class UserRegisterResponse(BaseModel):
+    email: EmailStr
+    name: str
+    phone: str
+    address: str
+    city: str
+    state: str
+    address: str
+    username: str
+
+
 class VerifyEmail(BaseModel):
     username: str
     code: str
 
     @field_validator('code')
     def code_validator(cls, value):
-        if len(value) < 6:
-            raise ValueError('Code must be at least 8 characters long')
+        if len(value) < 6 or len(value) > 6:
+            raise ValueError('Code must be at least 6 characters long')
         return value
 
 

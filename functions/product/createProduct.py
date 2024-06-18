@@ -1,5 +1,3 @@
-import json
-
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.products import Products
@@ -51,6 +49,8 @@ def create_product(event: LambdaContext, context: LambdaContext):
         color=product.color.to_dict() if product.color else None,
         type=product.type.to_dict(),
     )
+
+    print(response_data)
 
     # Return success response
     return respond_success(
