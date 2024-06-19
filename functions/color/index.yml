@@ -21,3 +21,11 @@
       - http:
           path: delete/color/{id}
           method: delete
+
+  getColor:
+    handler: functions/color/getColor.main
+    memorySize: 128
+    events:
+      - http:
+          path: get/colors
+          method: delete

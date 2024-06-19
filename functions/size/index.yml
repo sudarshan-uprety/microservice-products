@@ -9,7 +9,6 @@
           path: get/size/{id}
           method: get
 
-
   createSize:
     handler: functions/size/createSize.main
     memorySize: 128
@@ -32,4 +31,12 @@
     events:
       - http:
           path: delete/size/{id}
+          method: delete
+
+  getSizes:
+    handler: functions/color/getSize.main
+    memorySize: 128
+    events:
+      - http:
+          path: get/sizes
           method: delete
