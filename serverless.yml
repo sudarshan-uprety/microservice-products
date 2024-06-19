@@ -40,3 +40,6 @@ custom:
   prune:
     automatic: true
     number: 1  # Keep only last version
+
+package:
+  individually: false
