@@ -57,5 +57,7 @@ jobs:
           serverless deploy --stage ${GITHUB_REF##*/} --verbose
 
       - name: Cleanup old versions
+        env:
+          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_KEY_DEV }}
         run: |
-          serverless prune -n 0
+          serverless prune -n 1
