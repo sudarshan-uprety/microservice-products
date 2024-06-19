@@ -28,8 +28,7 @@ jobs:
 
       - name: Install Serverless Plugins
         run: |
-          npm install serverless-python-requirements
-
+          npm install serverless-python-requirements serverless-prune-plugin
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -56,3 +55,7 @@ jobs:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_KEY_DEV }}
         run: |
           serverless deploy --stage ${GITHUB_REF##*/} --verbose
+
+      - name: Cleanup old versions
+        run: |
+          serverless prune -n 0

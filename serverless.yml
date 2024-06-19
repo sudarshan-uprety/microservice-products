@@ -10,6 +10,7 @@ plugins:
 #  - serverless-aws-documentation
 #  - serverless-offline
   - serverless-python-requirements
+  - serverless-prune-plugin
   # - serverless-domain-manager
 #  - serverless-iam-roles-per-function
 #  - serverless-deployment-bucket
@@ -29,3 +30,13 @@ custom:
     stage: dev
     region: ap-south-1
     lambdaPort: 3002
+
+  pythonRequirements:
+    dockerizePip: true
+    slim: true  # Only include necessary files
+    strip: true  # Remove unnecessary symbols
+    layer: true  # Use a Lambda layer for dependencies
+
+  prune:
+    automatic: true
+    number: 1  # Keep only last version
