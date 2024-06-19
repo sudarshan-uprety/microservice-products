@@ -19,3 +19,10 @@ class ColorCreateUpdateResponse(BaseModel):
     name: str
     hex: str
     status: bool
+
+
+class GetColorResponse(BaseModel):
+    id: str
+    name: str
+    hex: str
+    status: bool
