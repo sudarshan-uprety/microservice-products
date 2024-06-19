@@ -8,7 +8,10 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
 
 from utils.database import db_config
 from models.products import Products
+from schema.product import GetProductResponse
 from utils.exception_decorator import error_handler
+from utils.response import respond_success
+from utils import constant
 
 
 @error_handler
@@ -35,13 +38,33 @@ def get_all_products(event: APIGatewayProxyEventV2, context: LambdaContext):
     # call the db
     db_config()
 
-    products = Products.objects.exclude('created_at', 'updated_at').to_json()
-    products_json = json.loads(products)
+    products = Products.objects.filter(status=True)
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({"data": products_json})
-    }
+    product_responses = [
+        GetProductResponse(
+            id=str(product.id),
+            name=product.name,
+            price=product.price,
+            description=product.description,
+            image=product.image,
+            category=product.category.id if product.category else None,
+            stock=product.stock,
+            status=product.status,
+            size=product.size.id if product.size else None,
+            color=product.color.id if product.color else None,
+            type=product.type.id if product.type else None,
+            vendor=product.vendor.id if product.vendor else None
+        ).dict(exclude_none=True)
+        for product in products
+    ]
+
+    return respond_success(
+        data=product_responses,
+        success=True,
+        message='Color retrieved',
+        status_code=constant.SUCCESS_RESPONSE,
+        warning=None
+    )
 
 
 def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):

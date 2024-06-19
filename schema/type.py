@@ -19,3 +19,10 @@ class UpdateType(BaseModel):
     name: str
     description: str
     status: bool
+
+
+class GetTypeResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    status: bool

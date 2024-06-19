@@ -15,7 +15,7 @@ class Vendors(CommonDocument):
     meta = {"collection": "vendors"}
 
     def __str__(self):
-        return str(self.id)
+        return str(self.store_name)
 
     def to_dict(self):
         return {
