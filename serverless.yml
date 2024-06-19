@@ -31,11 +31,11 @@ custom:
     region: ap-south-1
     lambdaPort: 3002
 
-  pythonRequirements:
-    dockerizePip: true
-    slim: true  # Only include necessary files
-    strip: true  # Remove unnecessary symbols
-    layer: true  # Use a Lambda layer for dependencies
+#  pythonRequirements:
+#    dockerizePip: true
+#    slim: true  # Only include necessary files
+#    strip: true  # Remove unnecessary symbols
+#    layer: true  # Use a Lambda layer for dependencies
 
   prune:
     automatic: true
