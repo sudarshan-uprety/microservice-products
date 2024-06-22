@@ -28,4 +28,4 @@
     events:
       - http:
           path: get/colors
-          method: delete
+          method: get
