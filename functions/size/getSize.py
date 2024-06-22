@@ -9,7 +9,7 @@ from models.size import Size
 from schema.size import GetSizeResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant
+from utils import constant, object_fetch, pagination
 
 
 @error_handler
@@ -30,24 +30,23 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
 
 
 def get_all_size(event: APIGatewayProxyEventV2, context: LambdaContext):
+    # pagination
+    limit, skip, current_page = pagination.pagination(event=event)
+
+    # call the db
     db_config()
 
-    size = Size.objects.filter(status=True, is_deleted=False)
+    size = Size.objects.filter(status=True, is_deleted=False).limit(limit).skip(skip)
 
-    size_responses = [
-        GetSizeResponse(
-            id=str(size.id),
-            name=size.name,
-            description=size.description,
-            status=size.status,
-        ).dict()
-        for size in size
-    ]
+    # custom size response
+    size_responses = object_fetch.size_fetch(sizes=size)
 
     return respond_success(
         data=size_responses,
         success=True,
         message='Size retrieved',
         status_code=constant.SUCCESS_RESPONSE,
-        warning=None
+        warning=None,
+        current_page=current_page,
+        total_page=size.count()/10
     )

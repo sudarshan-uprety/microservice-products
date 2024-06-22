@@ -28,4 +28,4 @@
     events:
       - http:
           path: get/types
-          method: delete
+          method: get

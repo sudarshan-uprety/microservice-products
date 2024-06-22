@@ -4,14 +4,14 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import (
     APIGatewayProxyEventV2,
 )
-
+from mongoengine import Q
 
 from utils.database import db_config
 from models.products import Products
-from schema.product import GetProductResponse
+from models.vendors import Vendors
 from utils.exception_decorator import error_handler
 from utils.response import respond_success
-from utils import constant
+from utils import constant, object_fetch, pagination
 
 
 @error_handler
@@ -35,35 +35,31 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
 
 
 def get_all_products(event: APIGatewayProxyEventV2, context: LambdaContext):
+    # pagination
+    limit, skip, current_page = pagination.pagination(event=event)
+
     # call the db
     db_config()
 
-    products = Products.objects.filter(status=True)
+    # first get the active vendors
+    active_vendors = Vendors.objects.filter(is_active=True, is_deleted=False).values_list('id')
 
-    product_responses = [
-        GetProductResponse(
-            id=str(product.id),
-            name=product.name,
-            price=product.price,
-            description=product.description,
-            image=product.image,
-            category=product.category.id if product.category else None,
-            stock=product.stock,
-            status=product.status,
-            size=product.size.id if product.size else None,
-            color=product.color.id if product.color else None,
-            type=product.type.id if product.type else None,
-            vendor=product.vendor.id if product.vendor else None
-        ).dict(exclude_none=True)
-        for product in products
-    ]
+    products = Products.objects.filter(
+        Q(status=True) &
+        Q(is_deleted=False) &
+        Q(vendor__in=active_vendors)
+    ).limit(limit).skip(skip)
+
+    product_response = object_fetch.product_fetch(products=products)
 
     return respond_success(
-        data=product_responses,
+        data=product_response,
         success=True,
-        message='Color retrieved',
+        message='Products retrieved',
         status_code=constant.SUCCESS_RESPONSE,
-        warning=None
+        warning=None,
+        total_page=products.count()/10,
+        current_page=current_page
     )
 
 
@@ -72,13 +68,17 @@ def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):
 
     db_config()
 
-    product = Products.objects.get(id=product_id).to_json()
-    products_json = json.loads(product)
+    product = Products.objects.get(id=product_id)
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({"data": products_json})
-    }
+    product_response = object_fetch.product_fetch(products=product)
+
+    return respond_success(
+        data=product_response,
+        success=True,
+        message='Product retrieved',
+        status_code=constant.SUCCESS_RESPONSE,
+        warning=None
+    )
 
 
 def get_my_products(event: APIGatewayProxyEventV2, context: LambdaContext):

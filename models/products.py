@@ -22,3 +22,19 @@ class Products(CommonDocument):
 
     def __str__(self):
         return self.name
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "price": self.price,
+            "description": self.description,
+            "image": self.image,
+            "category": str(self.category.id) if self.category else None,
+            "stock": self.stock,
+            "status": self.status,
+            "size": str(self.size.id) if self.size else None,
+            "color": str(self.color.id) if self.color else None,
+            "type": str(self.type.id) if self.type else None,
+            "vendor": str(self.vendor.id) if self.vendor else None
+        }
