@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 
-from pydantic import BaseModel, Field, field_validator, validator
+from pydantic import BaseModel, Field, field_validator, model_validator, root_validator
 
 from models.category import Category
 from models.color import Color
@@ -67,6 +67,7 @@ class ProductCreateUpdateResponse(BaseModel):
 
 class GetProductResponse(BaseModel):
     """schema for get product model"""
+    id: str
     name: str
     price: float
     description: str
@@ -79,57 +80,19 @@ class GetProductResponse(BaseModel):
     vendor: Optional[Dict]
     type: Optional[Dict]
 
-    @field_validator('category')
-    def validate_category(cls, value):
-        if value is not None:
-            category = Category.objects(id=value).first()
-            if category:
-                return {
-                    'id': str(category.id),
-                    'name': category.name
-                }
-        return {}
+    @model_validator(mode='before')
+    def validate_references(cls, values):
+        def get_reference_dict(ref, model, fields):
+            if ref is not None:
+                obj = model.objects(id=ref).first()
+                if obj:
+                    return {field: str(getattr(obj, field)) for field in fields}
+            return None
 
-    @field_validator('size')
-    def validate_size(cls, value):
-        if value is not None:
-            size = Size.objects(id=value).first()
-            if size:
-                return {
-                    'id': str(size.id),
-                    'name': size.name
-                }
-        return {}
+        values['category'] = get_reference_dict(values.get('category'), Category, ['id', 'name', 'description'])
+        values['size'] = get_reference_dict(values.get('size'), Size, ['id', 'name', 'description'])
+        values['color'] = get_reference_dict(values.get('color'), Color, ['id', 'hex'])
+        values['type'] = get_reference_dict(values.get('type'), Type, ['id', 'name', 'description'])
+        values['vendor'] = get_reference_dict(values.get('vendor'), Vendors, ['id', 'store_name'])
 
-    @field_validator('color')
-    def validate_color(cls, value):
-        if value is not None:
-            color = Color.objects(id=value).first()
-            if color:
-                return {
-                    'id': str(color.id),
-                    'hex': color.hex
-                }
-        return {}
-
-    @field_validator('type')
-    def validate_type(cls, value):
-        if value is not None:
-            types = Type.objects(id=value).first()
-            if types:
-                return {
-                    'id': str(types.id),
-                    'name': types.name
-                }
-        return {}
-
-    @field_validator('vendor')
-    def validate_vendor(cls, value):
-        if value is not None:
-            vendor = Vendors.objects(id=value).first()
-            if vendor:
-                return {
-                    'id': str(vendor.id),
-                    'name': vendor.name
-                }
-        return {}
+        return values

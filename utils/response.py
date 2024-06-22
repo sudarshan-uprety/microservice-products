@@ -1,4 +1,5 @@
 import json
+import math
 
 headers = {
     "Content-Type": "application/json",
@@ -32,6 +33,12 @@ def respond_error(data, success, message, status_code, errors=[]):
     return {"statusCode": status_code, "headers": headers, "body": json.dumps(body)}
 
 
-def respond_success(data, success, message, status_code, warning=None):
+def respond_success(data, success, message, status_code, warning=None, total_page=None, current_page=None):
+    if total_page and current_page:
+        data = {
+            "total_pages": math.ceil(total_page),
+            "current_page": current_page,
+            "data": data,
+        }
     body = {"message": message, "success": success, "data": data, "warning": warning}
     return {"statusCode": status_code, "headers": headers, "body": json.dumps(body)}

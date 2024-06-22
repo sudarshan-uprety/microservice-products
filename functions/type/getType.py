@@ -3,6 +3,8 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
     APIGatewayProxyEventV2,
 )
 
+from utils import pagination, object_fetch
+
 
 from utils.database import db_config
 from models.type import Type
@@ -30,24 +32,24 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
 
 
 def get_all_type(event: APIGatewayProxyEventV2, context: LambdaContext):
+    # pagination
+    limit, skip, current_page = pagination.pagination(event=event)
+
+    # call the db
     db_config()
 
-    types = Type.objects.filter(status=True, is_deleted=False)
+    # fetch type objects
+    types = Type.objects.filter(status=True, is_deleted=False).limit(limit).skip(skip)
 
-    type_responses = [
-        GetTypeResponse(
-            id=str(types.id),
-            name=types.name,
-            description=types.description,
-            status=types.status,
-        ).dict()
-        for types in types
-    ]
+    # response
+    type_responses = object_fetch.type_fetch(types)
 
     return respond_success(
         data=type_responses,
         success=True,
         message='Size retrieved',
         status_code=constant.SUCCESS_RESPONSE,
-        warning=None
+        warning=None,
+        total_page=types.count()/10,
+        current_page=current_page
     )
