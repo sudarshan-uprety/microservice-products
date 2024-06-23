@@ -88,3 +88,30 @@
       - http:
           path: user/confirm/forget/password
           method: post
+
+  registerAdmin:
+    handler: functions/users/registerUser.main
+    memorySize: 128
+    events:
+      - http:
+          path: register/admin
+          method: post
+      - http:
+          path: verify/admin
+          method: post
+
+  adminDetail:
+    handler: functions/users/loginUser.main
+    memorySize: 128
+    events:
+      - http:
+          path: admin/detail
+          method: post
+
+  updateSuperUserStatus:
+    handler: functions/users/updateUser.main
+    memorySize: 128
+    events:
+      - http:
+          path: admin/update/superuser/status
+          method: post

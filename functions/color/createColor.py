@@ -48,6 +48,6 @@ def create_color(event: LambdaContext, context: LambdaContext):
         data=color_response.dict(),
         success=True,
         status_code=constant.SUCCESS_CREATED,
-        message="Category created.",
+        message="Color created.",
         warning=None
     )
