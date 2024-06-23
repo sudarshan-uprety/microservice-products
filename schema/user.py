@@ -65,6 +65,7 @@ class GetUserDetail(BaseModel):
 
 class UserDetailResponse(BaseModel):
     username: str
+    name: str
     email: str
     phone: str
     address: str
