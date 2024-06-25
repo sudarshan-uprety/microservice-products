@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Serverless Plugins
         run: |
-          npm install serverless-python-requirements serverless-prune-plugin serverless-dotenv-plugin
+          npm install serverless-python-requirements serverless-prune-plugin
 
       - name: Set up Python
         uses: actions/setup-python@v4
