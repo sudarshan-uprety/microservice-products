@@ -25,6 +25,7 @@ def main(event: LambdaContext, context: LambdaContext):
 
 
 def create_product(event: LambdaContext, context: LambdaContext):
+    print(event)
     input_data = helpers.load_json(event=event)
 
     db_config()
