@@ -3,11 +3,15 @@ service: product-service
 provider:
   name: aws
   runtime: python3.10
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: ap-south-1
+  environment:
+    COGNITO_USER_POOL_ID: ${.env:UserPoolID}
+    COGNITO_USER_POOL_CLIENT_ID: ${.env:CognitoClientId}
 
 plugins:
 #  - serverless-aws-documentation
+  - serverless-dotenv-plugin
 #  - serverless-offline
   - serverless-python-requirements
   - serverless-prune-plugin
@@ -24,6 +28,7 @@ functions:
   - ${file(functions/color/index.yml)}
 
 custom:
+  cognitoUserPoolArn: arn:aws:cognito-idp:${self:provider.region}:${.env:AccountID}:userpool/${.env:UserPoolID}
   serverless-offline:
     host: 0.0.0.0
     port: 3000

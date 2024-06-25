@@ -19,6 +19,10 @@
       - http:
           path: create/product
           method: post
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${.env:AccountID}:userpool/${.env:UserPoolID}
 
   updateProduct:
     handler: functions/product/updateProduct.main

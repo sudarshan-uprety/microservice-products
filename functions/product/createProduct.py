@@ -50,8 +50,6 @@ def create_product(event: LambdaContext, context: LambdaContext):
         type=product.type.to_dict(),
     )
 
-    print(response_data)
-
     # Return success response
     return respond_success(
         status_code=constant.SUCCESS_CREATED,

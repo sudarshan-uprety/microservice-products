@@ -75,7 +75,7 @@ def user_details(event: LambdaContext, context: LambdaContext):
     response = client.get_user(
         AccessToken=user_detail.access_token,
     )
-    print(response)
+
     user_attributes = {attr['Name']: attr['Value'] for attr in response['UserAttributes']}
 
     user_detail_response = user.UserDetailResponse(
