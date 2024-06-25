@@ -29,6 +29,12 @@ def create_product(event: LambdaContext, context: LambdaContext):
 
     db_config()
 
+    # check if vendor is active or not
+    vendor = helpers.vendor_check(vendor_sub=event['requestContext']['authorizer']['claims']['sub'])
+
+    # inject vendor incoming data
+    input_data['vendor'] = vendor.id
+
     # validation for incoming data.
     product_details = ProductCreate(**input_data)
 
@@ -49,8 +55,6 @@ def create_product(event: LambdaContext, context: LambdaContext):
         color=product.color.to_dict() if product.color else None,
         type=product.type.to_dict(),
     )
-
-    print(response_data)
 
     # Return success response
     return respond_success(

@@ -50,14 +50,18 @@ def login_user(event: LambdaContext, context: LambdaContext):
         }
     )
 
+    # response
+    token_response = user.UserToken(
+        access_token=response['AuthenticationResult']['AccessToken'],
+        refresh_token=response['AuthenticationResult']['RefreshToken'],
+        id_token=response['AuthenticationResult']['IdToken'],
+    ).dict()
+
     # Return success response
     return respond_success(
         status_code=constant.SUCCESS_RESPONSE,
         success=True,
-        data={
-            'access_token': response['AuthenticationResult']['AccessToken'],
-            'refresh_token': response['AuthenticationResult']['RefreshToken'],
-            },
+        data=token_response,
         warning=None,
         message="Fetched access and refresh token",
     )
@@ -75,7 +79,7 @@ def user_details(event: LambdaContext, context: LambdaContext):
     response = client.get_user(
         AccessToken=user_detail.access_token,
     )
-    print(response)
+
     user_attributes = {attr['Name']: attr['Value'] for attr in response['UserAttributes']}
 
     user_detail_response = user.UserDetailResponse(
@@ -112,7 +116,9 @@ def refresh_token(event: LambdaContext, context: LambdaContext):
     )
 
     response_access_token = user.NewAccessTokenResponse(
-        access_token=response['AuthenticationResult']['AccessToken']
+        access_token=response['AuthenticationResult']['AccessToken'],
+        id_token=response['AuthenticationResult']['IdToken'],
+
     )
 
     return respond_success(
@@ -160,9 +166,9 @@ def admin_details(event: LambdaContext, context: LambdaContext):
     response = client.get_user(
         AccessToken=admin_detail.access_token,
     )
-    print(response)
+
     user_attributes = {attr['Name']: attr['Value'] for attr in response['UserAttributes']}
-    print(user_attributes)
+
     user_detail_response = admins.AdminDetailResponse(
         username=response['Username'],
         email=user_attributes.get('email', ''),

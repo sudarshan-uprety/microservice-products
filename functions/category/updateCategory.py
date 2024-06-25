@@ -9,7 +9,7 @@ from utils import constant, helpers, get_obj
 
 
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+def main(event: APIGatewayProxyEventV2, context: LambdaContext):
     path = event.get("path")
 
     if "/update/category/" in path:
