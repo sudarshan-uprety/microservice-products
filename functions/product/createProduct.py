@@ -25,10 +25,15 @@ def main(event: LambdaContext, context: LambdaContext):
 
 
 def create_product(event: LambdaContext, context: LambdaContext):
-    print(event)
     input_data = helpers.load_json(event=event)
 
     db_config()
+
+    # check if vendor is active or not
+    vendor = helpers.vendor_check(vendor_sub=event['requestContext']['authorizer']['claims']['sub'])
+
+    # inject vendor incoming data
+    input_data['vendor'] = vendor.id
 
     # validation for incoming data.
     product_details = ProductCreate(**input_data)

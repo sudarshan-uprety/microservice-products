@@ -1,8 +1,10 @@
 import json
 import boto3
 
+from models.vendors import Vendors
+from models.admins import Admin
 from utils.response import respond_error
-from utils import variables
+from utils import variables, constant
 
 
 def pydantic_error(err):
@@ -81,3 +83,41 @@ def load_json(event):
 def boto3_client():
     client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
     return client
+
+
+def vendor_check(vendor_sub):
+    vendor = Vendors.objects.get(id=vendor_sub, is_deleted=False)
+    if not vendor:
+        return respond_error(
+            status_code=constant.ERROR_NOT_FOUND,
+            message="Vendor not found",
+            data=None,
+            success=False
+        )
+    if not vendor.is_active:
+        return respond_error(
+            status_code=constant.ERROR_BAD_REQUEST,
+            message="Vendor is not active",
+            data=None,
+            success=False
+        )
+    return vendor
+
+
+def admin_check(admin_sub):
+    admin = Admin.objects.get(id=admin_sub, is_deleted=False)
+    if not admin:
+        return respond_error(
+            status_code=constant.ERROR_NOT_FOUND,
+            message="Admin not found",
+            data=None,
+            success=False
+        )
+    if not admin.is_active:
+        return respond_error(
+            status_code=constant.ERROR_BAD_REQUEST,
+            message="Admin is not active",
+            data=None,
+            success=False
+        )
+    return admin
