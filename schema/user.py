@@ -77,10 +77,17 @@ class NewAccessToken(BaseModel):
 
 class NewAccessTokenResponse(BaseModel):
     access_token: str
+    id_token: str
 
 
 class Logout(BaseModel):
     access_token: str
+
+
+class UserToken(BaseModel):
+    access_token: str
+    refresh_token: str
+    id_token: str
 
 
 class ChangePassword(BaseModel):
