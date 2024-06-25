@@ -1,5 +1,6 @@
 service: product-service
 
+useDotenv: true
 provider:
   name: aws
   runtime: python3.10
@@ -11,7 +12,7 @@ provider:
 
 plugins:
 #  - serverless-aws-documentation
-  - serverless-dotenv-plugin
+#  - serverless-dotenv-plugin
 #  - serverless-offline
   - serverless-python-requirements
   - serverless-prune-plugin
