@@ -68,7 +68,7 @@ def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):
 
     db_config()
 
-    product = Products.objects.get(id=product_id)
+    product = Products.objects.get(id=product_id, is_deleted=False, is_active=True)
 
     product_response = object_fetch.product_fetch(products=product)
 

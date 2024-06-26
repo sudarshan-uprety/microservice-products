@@ -40,6 +40,10 @@
       - http:
           path: delete/product/{id}
           method: delete
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   myProduct:
     handler: functions/product/getProduct.main
