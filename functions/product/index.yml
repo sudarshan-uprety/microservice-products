@@ -8,9 +8,6 @@
       - http:
           path: get/product/{id}
           method: get
-      - http:
-          path: get/my/products
-          method: get
 
   createProduct:
     handler: functions/product/createProduct.main
@@ -31,6 +28,10 @@
       - http:
           path: update/product/{id}
           method: put
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   deleteProduct:
     handler: functions/product/deleteProduct.main
@@ -39,3 +40,15 @@
       - http:
           path: delete/product/{id}
           method: delete
+
+  myProduct:
+    handler: functions/product/getProduct.main
+    memorySize: 128
+    events:
+      - http:
+          path: get/my/products
+          method: get
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}

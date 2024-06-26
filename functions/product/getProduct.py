@@ -11,7 +11,7 @@ from models.products import Products
 from models.vendors import Vendors
 from utils.exception_decorator import error_handler
 from utils.response import respond_success
-from utils import constant, object_fetch, pagination
+from utils import constant, object_fetch, pagination, helpers
 
 
 @error_handler
@@ -82,7 +82,27 @@ def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):
 
 
 def get_my_products(event: APIGatewayProxyEventV2, context: LambdaContext):
-    return {
-        "statusCode": 200,
-        "body": json.dumps({"message": "Fetched my products"})
-    }
+    # pagination
+    limit, skip, current_page = pagination.pagination(event=event)
+
+    # call the db
+    db_config()
+
+    # fetch vendor id from the lambda event
+    vendor = helpers.vendor_check(vendor_sub=event['requestContext']['authorizer']['claims']['sub'])
+
+    products = Products.objects.filter(
+        vendor=vendor, is_deleted=False
+    ).limit(limit).skip(skip)
+
+    products_response = object_fetch.product_fetch(products=products)
+
+    return respond_success(
+        data=products_response,
+        success=True,
+        message='Products retrieved',
+        status_code=constant.SUCCESS_RESPONSE,
+        warning=None,
+        total_page=products.count() / 10,
+        current_page=current_page
+    )
