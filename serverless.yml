@@ -13,7 +13,7 @@ provider:
 plugins:
 #  - serverless-aws-documentation
   - serverless-dotenv-plugin
-  - serverless-offline
+#  - serverless-offline
   - serverless-python-requirements
   - serverless-prune-plugin
   # - serverless-domain-manager
