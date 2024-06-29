@@ -42,7 +42,7 @@ def change_password(event: LambdaContext, context: LambdaContext):
     new_detail = user.ChangePassword(**input_data)
 
     # create a boto3 object
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     # change user password with cognito
     response = client.change_password(
@@ -69,7 +69,7 @@ def update_name(event: LambdaContext, context: LambdaContext):
     new_details = user.UpdateName(**input_data)
 
     # create a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.update_user_attributes(
         UserAttributes=[
@@ -100,7 +100,7 @@ def update_phone(event: LambdaContext, context: LambdaContext):
     new_details = user.UpdatePhone(**input_data)
 
     # create a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.update_user_attributes(
         UserAttributes=[
@@ -131,7 +131,7 @@ def update_address(event: LambdaContext, context: LambdaContext):
     new_details = user.UpdateAddress(**input_data)
 
     # create a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.update_user_attributes(
         UserAttributes=[
@@ -161,7 +161,7 @@ def forget_password(event: LambdaContext, context: LambdaContext):
     # validating incoming data
     details = user.ForgetPassword(**input_data)
 
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.forgot_password(
         ClientId=variables.CognitoClientId,
@@ -187,7 +187,7 @@ def confirm_forget_password(event: LambdaContext, context: LambdaContext):
     data = user.ForgetPasswordConfirm(**input_data)
 
     # creating a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.confirm_forgot_password(
         ClientId=variables.CognitoClientId,
@@ -214,7 +214,7 @@ def update_superuser(event: LambdaContext, context: LambdaContext):
     data = admins.UpdateSuperUser(**input_data)
 
     # aws boto3 client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.update_user_attributes(
         UserAttributes=[

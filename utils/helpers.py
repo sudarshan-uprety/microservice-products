@@ -68,20 +68,25 @@ def pydantic_error(err):
 def load_json(event):
     body = event.get('body')
 
-    if not body:
-        return respond_error(
-            status_code=400,
-            message="Missing body",
-            data=None,
-            success=False
-        )
-
-    input_data = json.loads(body)
-    return input_data
+    if body:
+        input_data = json.loads(body)
+        return input_data
+    else:
+        raise ValueError("Request body is missing")
 
 
-def boto3_client():
+def boto3_cognito_client():
     client = boto3.client('cognito-idp', region_name=variables.CognitoRegionName)
+    return client
+
+
+def boto3_s3_client():
+    client = boto3.client(
+        's3',
+        region_name=variables.CognitoRegionName,
+        aws_access_key_id=variables.AWSAccessKeyId,
+        aws_secret_access_key=variables.AWSSecretKeyID
+    )
     return client
 
 
