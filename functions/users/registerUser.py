@@ -41,7 +41,7 @@ def register_user(event: LambdaContext, context: LambdaContext):
     input_data = user.UserRegister(**user_details)
 
     # create a boto3 object
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     # Register user in cognito
     response = client.sign_up(
@@ -114,7 +114,7 @@ def verify_user(event: LambdaContext, context: LambdaContext):
     # validate incoming data
     data = user.VerifyEmail(**input_data)
 
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.confirm_sign_up(
         ClientId=variables.CognitoClientId,
@@ -154,7 +154,7 @@ def register_admin(event: LambdaContext, context: LambdaContext):
     input_data = user.UserRegister(**admin_details)
 
     # create a boto3 object
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     # Register admin in cognito
     response = client.sign_up(
@@ -227,7 +227,7 @@ def verify_admin(event: LambdaContext, context: LambdaContext):
     # validate incoming data
     data = admins.VerifyAdminEmail(**input_data)
 
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.confirm_sign_up(
         ClientId=variables.CognitoClientId,

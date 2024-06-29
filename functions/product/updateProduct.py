@@ -8,7 +8,7 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
 from models.products import Products
 from schema.product import ProductCreate, ProductCreateUpdateResponse
 from utils.response import respond_success, respond_error
-from utils import helpers, get_obj, database
+from utils import helpers, get_obj, database, decrypt_payload, s3
 from utils.exception_decorator import error_handler
 
 
@@ -27,6 +27,7 @@ def main(event: LambdaContext, context: LambdaContext):
 
 def update_product(event: LambdaContext, context: LambdaContext):
     product_id = event.get("pathParameters", {}).get("id")
+    input_data, image = decrypt_payload.decrypt_payload(event=event)
 
     database.db_config()
 
@@ -35,14 +36,15 @@ def update_product(event: LambdaContext, context: LambdaContext):
     )
 
     product_obj = get_obj.get_obj_or_404(model=Products, id=product_id)
-
     if product_obj.vendor.id == vendor.id:
+        # delete the existing image from s3
+        s3.delete_image(product_obj.image)
 
-        # validate incoming data
-        input_data = helpers.load_json(event=event)
+        image_url = s3.upload_image(image=image)
 
-        # inject vendor to the incoming data
+        # inject vendor and new image url to the incoming data
         input_data['vendor'] = vendor.id
+        input_data['image'] = image_url
 
         product_update = ProductCreate(**input_data)
 

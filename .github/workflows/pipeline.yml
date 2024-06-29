@@ -41,7 +41,17 @@ jobs:
           pip install -r requirements.txt
 
       - name: Create .env file from GitHub secret
-        run: echo "${{ vars.DEV_ENV }}" > .env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+            echo "${{ vars.PROD_ENV }}" > .env
+          elif [[ "${{ github.ref }}" == "refs/heads/uat" ]]; then
+            echo "${{ vars.UAT_ENV }}" > .env
+          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "${{ vars.DEV_ENV }}" > .env
+          else
+            echo "This branch does not have corresponding environment variables"
+            exit 1
+          fi
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
