@@ -18,3 +18,10 @@
       - http:
           path: delete/category/{id}
           method: delete
+
+  getCategories:
+    handler: functions/category/getCategory.main
+    events:
+      - http:
+          path: get/categories
+          method: get

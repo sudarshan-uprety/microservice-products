@@ -2,6 +2,7 @@ import json
 
 from mongoengine.errors import DoesNotExist, FieldDoesNotExist, ValidationError
 from pydantic import ValidationError as PydanticError
+from aws_lambda_powertools.event_handler.exceptions import UnauthorizedError
 import botocore.exceptions
 
 from utils import constant, response, helpers
@@ -39,8 +40,26 @@ def error_handler(func):
             )
         except botocore.exceptions.ClientError as err:
             return response.error_response(
-                status_code=err.response['ResponseMetadata']['HTTPStatusCode'],
+                status_code=constant.ERROR_BAD_REQUEST,
                 message=str(err.response["Error"]["Message"]),
+                errors=str(err)
+            )
+        except UnauthorizedError as err:
+            return response.error_response(
+                status_code=constant.ERROR_BAD_REQUEST,
+                message=str(err),
+                errors=str(err)
+            )
+        except ValueError as err:
+            return response.error_response(
+                status_code=constant.ERROR_BAD_REQUEST,
+                message=str(err),
+                errors=str(err)
+            )
+        except Exception as err:
+            return response.error_response(
+                status_code=constant.ERROR_INTERNAL_SERVER_ERROR,
+                message=str(err),
                 errors=str(err)
             )
         return to_return

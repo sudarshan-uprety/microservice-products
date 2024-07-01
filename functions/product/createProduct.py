@@ -1,5 +1,5 @@
+import base64
 import json
-
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.products import Products
@@ -7,7 +7,7 @@ from utils.database import db_config
 from schema.product import ProductCreate, ProductCreateUpdateResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, helpers
+from utils import constant, helpers, decrypt_payload, s3
 
 
 @error_handler
@@ -27,9 +27,21 @@ def main(event: LambdaContext, context: LambdaContext):
 
 
 def create_product(event: LambdaContext, context: LambdaContext):
-    input_data = helpers.load_json(event=event)
+    input_data, image = decrypt_payload.decrypt_payload(event=event)
 
     db_config()
+
+    # check if vendor is active or not
+    vendor = helpers.vendor_check(
+        vendor_sub=event['requestContext']['authorizer']['claims']['sub']
+    )
+
+    # save image to s3
+    image_url = s3.upload_image(image)
+
+    # inject vendor and image url to incoming data
+    input_data['vendor'] = vendor.id
+    input_data['image'] = image_url
 
     # validation for incoming data.
     product_details = ProductCreate(**input_data)

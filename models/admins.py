@@ -2,9 +2,9 @@ from models.base import CommonDocument
 from mongoengine import StringField, BooleanField
 
 
-class Vendors(CommonDocument):
+class Admin(CommonDocument):
     id = StringField(primary_key=True)
-    store_name = StringField()
+    name = StringField()
     address = StringField()
     city = StringField()
     state = StringField()
@@ -12,15 +12,15 @@ class Vendors(CommonDocument):
     email = StringField()
     is_active = BooleanField(default=False)
 
-    meta = {"collection": "vendors"}
+    meta = {"collection": "admins"}
 
     def __str__(self):
-        return str(self.store_name)
+        return str(self.name)
 
     def to_dict(self):
         return {
-            "vendor_id": self.id,
-            "store_name": self.store_name,
+            "id": self.id,
+            "name": self.name,
             "address": self.address,
             "city": self.city,
             "state": self.state,

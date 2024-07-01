@@ -21,3 +21,11 @@
       - http:
           path: delete/type/{id}
           method: delete
+
+  getType:
+    handler: functions/type/getType.main
+    memorySize: 128
+    events:
+      - http:
+          path: get/types
+          method: get

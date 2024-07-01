@@ -20,3 +20,10 @@ class CategoryCreateUpdateResponse(BaseModel):
     name: str
     description: str
     status: bool
+
+
+class GetCategoryResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    status: bool

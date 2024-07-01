@@ -1,7 +1,7 @@
 import boto3
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
-from schema import user
+from schema import user, admins
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, variables, helpers
@@ -23,6 +23,8 @@ def main(event: LambdaContext, context: LambdaContext):
         return forget_password(event, context)
     elif path == "/user/confirm/forget/password":
         return confirm_forget_password(event, context)
+    elif path == "/admin/update/superuser/status":
+        return update_superuser(event, context)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -40,7 +42,7 @@ def change_password(event: LambdaContext, context: LambdaContext):
     new_detail = user.ChangePassword(**input_data)
 
     # create a boto3 object
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     # change user password with cognito
     response = client.change_password(
@@ -67,7 +69,7 @@ def update_name(event: LambdaContext, context: LambdaContext):
     new_details = user.UpdateName(**input_data)
 
     # create a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.update_user_attributes(
         UserAttributes=[
@@ -98,7 +100,7 @@ def update_phone(event: LambdaContext, context: LambdaContext):
     new_details = user.UpdatePhone(**input_data)
 
     # create a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.update_user_attributes(
         UserAttributes=[
@@ -129,7 +131,7 @@ def update_address(event: LambdaContext, context: LambdaContext):
     new_details = user.UpdateAddress(**input_data)
 
     # create a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.update_user_attributes(
         UserAttributes=[
@@ -159,7 +161,7 @@ def forget_password(event: LambdaContext, context: LambdaContext):
     # validating incoming data
     details = user.ForgetPassword(**input_data)
 
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.forgot_password(
         ClientId=variables.CognitoClientId,
@@ -185,7 +187,7 @@ def confirm_forget_password(event: LambdaContext, context: LambdaContext):
     data = user.ForgetPasswordConfirm(**input_data)
 
     # creating a boto client
-    client = helpers.boto3_client()
+    client = helpers.boto3_cognito_client()
 
     response = client.confirm_forgot_password(
         ClientId=variables.CognitoClientId,
@@ -200,6 +202,36 @@ def confirm_forget_password(event: LambdaContext, context: LambdaContext):
             status_code=constant.SUCCESS_RESPONSE,
             data=None,
             message="Password reset successfully.",
+            warning=None
+        )
+    # else condition will be handler by @error_handler decorator.
+
+
+def update_superuser(event: LambdaContext, context: LambdaContext):
+    input_data = helpers.load_json(event=event)
+
+    # validate incoming data
+    data = admins.UpdateSuperUser(**input_data)
+
+    # aws boto3 client
+    client = helpers.boto3_cognito_client()
+
+    response = client.update_user_attributes(
+        UserAttributes=[
+            {
+                'Name': 'custom:is_superuser',
+                'Value': '1' if data.is_superuser else '0'
+            },
+        ],
+        AccessToken=data.access_token
+    )
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return respond_success(
+            success=True,
+            status_code=constant.SUCCESS_RESPONSE,
+            data=None,
+            message="Superuser status updated successfully.",
             warning=None
         )
     # else condition will be handler by @error_handler decorator.
