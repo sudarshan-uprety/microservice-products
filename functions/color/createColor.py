@@ -1,19 +1,22 @@
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.color import Color
+from models.admins import Admin
 from utils.database import db_config
 from schema.color import CreateColor, ColorCreateUpdateResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, helpers
+from utils.middleware import admin_login
 
 
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+@admin_login
+def main(event: LambdaContext, context: LambdaContext, admin: Admin):
     path = event.get("path")
 
     if path == "/create/color":
-        return create_color(event, context)
+        return create_color(event, context, admin)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -24,10 +27,11 @@ def main(event: LambdaContext, context: LambdaContext):
         )
 
 
-def create_color(event: LambdaContext, context: LambdaContext):
+def create_color(event: LambdaContext, context: LambdaContext, admin: Admin):
     input_data = helpers.load_json(event=event)
 
-    db_config()
+    # injecting created by user
+    input_data["created_by"] = admin.id
 
     # validation for incoming data.
     color_data = CreateColor(**input_data)

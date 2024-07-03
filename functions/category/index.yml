@@ -15,6 +15,10 @@
       - http:
           path: update/category/{id}
           method: put
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   deleteCategory:
     handler: functions/category/deleteCategory.main
@@ -22,6 +26,10 @@
       - http:
           path: delete/category/{id}
           method: delete
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   getCategories:
     handler: functions/category/getCategory.main

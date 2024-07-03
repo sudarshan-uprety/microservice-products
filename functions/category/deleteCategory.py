@@ -1,18 +1,21 @@
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.category import Category
+from models.admins import Admin
 from utils.database import db_config
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, helpers, get_obj
+from utils.middleware import admin_login, update_element
 
 
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+@admin_login
+def main(event: LambdaContext, context: LambdaContext, admin: Admin):
     path = event.get("path")
 
     if "/delete/category/" in path:
-        return delete_category(event, context)
+        return delete_category(event, context, user=admin, model=Category)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -23,12 +26,9 @@ def main(event: LambdaContext, context: LambdaContext):
         )
 
 
-def delete_category(event: LambdaContext, context: LambdaContext):
-    category_id = event.get("pathParameters", {}).get("id")
-
-    db_config()
-
-    obj = get_obj.get_obj_or_404(Category, id=category_id)
+@update_element
+def delete_category(event: LambdaContext, context: LambdaContext, **kwargs):
+    obj = kwargs.get('element')
     obj.is_deleted = True
     obj.save()
 

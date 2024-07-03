@@ -6,6 +6,7 @@ class CreateColor(BaseModel):
     name: str
     hex: str
     status: bool
+    created_by: str
 
 
 class ColorUpdate(BaseModel):

@@ -41,13 +41,13 @@ def vendors_login(func):
 def update_element(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        obj_class = kwargs.get('element')
-        id = kwargs.get('id')
-        current_admin = kwargs.get('admin')
+        id = args[0]['pathParameters']['id']
+        obj_class = kwargs.get("model")
+        current_admin = kwargs.get('user')
         try:
-            element = obj_class.objects.get(id=id)
-            if str(element.created_by.id) != str(current_admin):
-                raise UnauthorizedError("You are not authorized to update this element.")
+            element = obj_class.objects.get(id=id, is_deleted=False)
+            if str(element.created_by.id) != str(current_admin.id):
+                raise UnauthorizedError("You are not authorized to update/delete this element.")
             kwargs['element'] = element
             return func(*args, **kwargs)
         except DoesNotExist:
