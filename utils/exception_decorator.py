@@ -31,7 +31,7 @@ def error_handler(func):
             )
         except CustomException as err:
             return response.error_response(
-                status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=err.args[0]
+                status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=err
             )
         except PydanticError as err:
             msg = helpers.pydantic_error(err)

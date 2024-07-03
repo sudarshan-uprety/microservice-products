@@ -1,19 +1,23 @@
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
+from pymongo.database import Database
 
+from models.admins import Admin
 from models.category import Category
 from utils.database import db_config
 from schema.category import CategoryCreate, CategoryCreateUpdateResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, helpers
+from utils.middleware import admin_login
 
 
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+@admin_login
+def main(event: LambdaContext, context: LambdaContext, admin: Admin):
     path = event.get("path")
 
     if path == "/create/category":
-        return create_category(event, context)
+        return create_category(event, context, admin)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -24,14 +28,8 @@ def main(event: LambdaContext, context: LambdaContext):
         )
 
 
-def create_category(event: LambdaContext, context: LambdaContext):
+def create_category(event: LambdaContext, context: LambdaContext, admin: Admin):
     input_data = helpers.load_json(event=event)
-
-    db_config()
-
-    admin = helpers.admin_check(
-        admin_sub=event['requestContext']['authorizer']['claims']['sub']
-    )
 
     # injecting admin to category
     input_data["created_by"] = admin.id
