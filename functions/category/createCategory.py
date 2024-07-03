@@ -29,6 +29,13 @@ def create_category(event: LambdaContext, context: LambdaContext):
 
     db_config()
 
+    admin = helpers.admin_check(
+        admin_sub=event['requestContext']['authorizer']['claims']['sub']
+    )
+
+    # injecting admin to category
+    input_data["created_by"] = admin.id
+
     # validation for incoming data.
     category_data = CategoryCreate(**input_data)
 

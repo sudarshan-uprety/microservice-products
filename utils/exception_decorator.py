@@ -1,6 +1,6 @@
 import json
 
-from mongoengine.errors import DoesNotExist, FieldDoesNotExist, ValidationError
+from mongoengine.errors import DoesNotExist, FieldDoesNotExist, ValidationError, NotRegistered
 from pydantic import ValidationError as PydanticError
 from aws_lambda_powertools.event_handler.exceptions import UnauthorizedError
 import botocore.exceptions
