@@ -1,7 +1,3 @@
-import json
-import os
-
-import boto3
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from schema import user, admins
