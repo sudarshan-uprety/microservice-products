@@ -1,9 +1,7 @@
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
-from pymongo.database import Database
 
 from models.admins import Admin
 from models.category import Category
-from utils.database import db_config
 from schema.category import CategoryCreate, CategoryCreateUpdateResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success

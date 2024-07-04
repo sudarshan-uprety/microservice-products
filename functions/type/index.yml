@@ -5,6 +5,10 @@
       - http:
           path: create/type
           method: post
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   updateType:
     handler: functions/type/updateType.main
@@ -13,6 +17,10 @@
       - http:
           path: update/type/{id}
           method: put
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   deleteType:
     handler: functions/type/deleteType.main
@@ -21,6 +29,10 @@
       - http:
           path: delete/type/{id}
           method: delete
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   getType:
     handler: functions/type/getType.main

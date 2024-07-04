@@ -2,10 +2,9 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.category import Category
 from models.admins import Admin
-from utils.database import db_config
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, helpers, get_obj
+from utils import constant
 from utils.middleware import admin_login, update_element
 
 
