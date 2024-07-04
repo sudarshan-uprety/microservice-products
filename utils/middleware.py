@@ -53,3 +53,37 @@ def update_element(func):
         except DoesNotExist:
             raise DoesNotExist("Element does not exist")
     return wrapper
+
+
+def verify_admin(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print('args', args)
+        print('kwargs', kwargs)
+        try:
+            db_config()
+            admin_id = args[0]['requestContext']['authorizer']['claims']['sub']
+            admin = Admin.objects.get(id=admin_id, is_deleted=False)
+            if admin.is_active:
+                raise ValueError("Admin is already active.")
+            kwargs['admin'] = admin
+            return func(*args, **kwargs)
+        except DoesNotExist:
+            raise DoesNotExist("Admin does not exist")
+    return wrapper
+
+
+def verify_vendor(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            db_config()
+            vendor_id = args[0]['requestContext']['authorizer']['claims']['sub']
+            vendor = Vendors.objects.get(id=vendor_id, is_deleted=False)
+            if vendor.is_active:
+                raise ValueError("Vendor is already active.")
+            kwargs['vendor'] = vendor
+            return func(*args, **kwargs)
+        except DoesNotExist:
+            raise DoesNotExist("Vendor does not exist")
+    return wrapper

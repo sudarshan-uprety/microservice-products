@@ -1,7 +1,3 @@
-import json
-import os
-
-import boto3
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from schema import user, admins
@@ -10,6 +6,7 @@ from utils.response import respond_error, respond_success
 from utils import constant, variables, helpers, database
 from models import vendors
 from models.admins import Admin
+from utils.middleware import verify_vendor, verify_admin
 
 
 @error_handler
@@ -19,11 +16,11 @@ def main(event: LambdaContext, context: LambdaContext):
     if path == "/register/user":
         return register_user(event, context)
     elif path == "/verify/user":
-        return verify_user(event, context)
+        return verify_user(event, context, vendors.Vendors)
     elif path == "/register/admin":
         return register_admin(event, context)
     elif path == "/verify/admin":
-        return verify_admin(event, context)
+        return verify_admin(event, context, Admin)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -87,6 +84,7 @@ def register_user(event: LambdaContext, context: LambdaContext):
         vendor = vendors.Vendors(
             id=response['UserSub'],
             store_name=input_data.name,
+            username=input_data.username,
             address=input_data.address,
             city=input_data.city,
             state=input_data.state,
@@ -108,7 +106,8 @@ def register_user(event: LambdaContext, context: LambdaContext):
         )
 
 
-def verify_user(event: LambdaContext, context: LambdaContext):
+@verify_vendor
+def verify_user(event: LambdaContext, context: LambdaContext, **kwargs):
     input_data = helpers.load_json(event=event)
 
     # validate incoming data
@@ -200,6 +199,7 @@ def register_admin(event: LambdaContext, context: LambdaContext):
         admin = Admin(
             id=response['UserSub'],
             name=input_data.name,
+            username=input_data.username,
             address=input_data.address,
             city=input_data.city,
             state=input_data.state,
@@ -221,7 +221,9 @@ def register_admin(event: LambdaContext, context: LambdaContext):
         )
 
 
-def verify_admin(event: LambdaContext, context: LambdaContext):
+@verify_admin
+def verify_admin(event: LambdaContext, context: LambdaContext, **kwargs):
+    print('kwargs are', kwargs)
     input_data = helpers.load_json(event=event)
 
     # validate incoming data
