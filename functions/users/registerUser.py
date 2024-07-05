@@ -6,6 +6,7 @@ from utils.response import respond_error, respond_success
 from utils import constant, variables, helpers, database
 from models import vendors
 from models.admins import Admin
+from utils.middleware import verify_vendor, verify_admin
 
 
 @error_handler
@@ -19,7 +20,7 @@ def main(event: LambdaContext, context: LambdaContext):
     elif path == "/register/admin":
         return register_admin(event, context)
     elif path == "/verify/admin":
-        return verify_admin(event, context)
+        return admin_verify(event, context)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -83,6 +84,7 @@ def register_user(event: LambdaContext, context: LambdaContext):
         vendor = vendors.Vendors(
             id=response['UserSub'],
             store_name=input_data.name,
+            username=input_data.username,
             address=input_data.address,
             city=input_data.city,
             state=input_data.state,
@@ -104,8 +106,9 @@ def register_user(event: LambdaContext, context: LambdaContext):
         )
 
 
-def verify_user(event: LambdaContext, context: LambdaContext):
-    input_data = helpers.load_json(event=event)
+@verify_vendor
+def verify_user(event: LambdaContext, context: LambdaContext, **kwargs):
+    input_data = kwargs['body']
 
     # validate incoming data
     data = user.VerifyEmail(**input_data)
@@ -119,19 +122,7 @@ def verify_user(event: LambdaContext, context: LambdaContext):
     )
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        user_response = client.admin_get_user(
-            UserPoolId=variables.UserPoolID,
-            Username=data.username
-        )
-
-        for attr in user_response['UserAttributes']:
-            if attr['Name'] == 'sub':
-                user_id = attr['Value']
-                break
-
-        database.db_config()
-        vendor = vendors.Vendors.objects.get(id=user_id)
-        vendor.is_active = True
+        vendor = kwargs['vendor']
         vendor.save()
 
     return respond_success(
@@ -196,6 +187,7 @@ def register_admin(event: LambdaContext, context: LambdaContext):
         admin = Admin(
             id=response['UserSub'],
             name=input_data.name,
+            username=input_data.username,
             address=input_data.address,
             city=input_data.city,
             state=input_data.state,
@@ -217,8 +209,9 @@ def register_admin(event: LambdaContext, context: LambdaContext):
         )
 
 
-def verify_admin(event: LambdaContext, context: LambdaContext):
-    input_data = helpers.load_json(event=event)
+@verify_admin
+def admin_verify(event: LambdaContext, context: LambdaContext, **kwargs):
+    input_data = kwargs['body']
 
     # validate incoming data
     data = admins.VerifyAdminEmail(**input_data)
@@ -232,18 +225,7 @@ def verify_admin(event: LambdaContext, context: LambdaContext):
     )
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        admin_response = client.admin_get_user(
-            UserPoolId=variables.UserPoolID,
-            Username=data.username
-        )
-
-        for attr in admin_response['UserAttributes']:
-            if attr['Name'] == 'sub':
-                admin_id = attr['Value']
-                break
-
-        database.db_config()
-        admin = Admin.objects.get(id=admin_id)
+        admin = kwargs['admin']
         admin.is_active = True
         admin.save()
 

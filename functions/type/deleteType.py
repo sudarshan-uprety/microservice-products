@@ -1,17 +1,20 @@
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.type import Type
-from utils.database import db_config
+from models.admins import Admin
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, get_obj
+from utils import constant
+from utils.middleware import admin_login, update_element
 
 
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+@admin_login
+def main(event: LambdaContext, context: LambdaContext, admin: Admin):
     path = event.get("path")
+
     if "/delete/type/" in path:
-        return delete_type(event, context)
+        return delete_type(event, context, user=admin, model=Type)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -22,12 +25,9 @@ def main(event: LambdaContext, context: LambdaContext):
         )
 
 
-def delete_type(event: LambdaContext, context: LambdaContext):
-    type_id = event.get("pathParameters", {}).get("id")
-
-    db_config()
-
-    obj = get_obj.get_obj_or_404(model=Type, id=type_id)
+@update_element
+def delete_type(event: LambdaContext, context: LambdaContext, **kwargs):
+    obj = kwargs.get('element')
     obj.is_deleted = True
     obj.save()
 

@@ -5,6 +5,10 @@
       - http:
           path: create/color
           method: post
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   updateColor:
     handler: functions/color/updateColor.main
@@ -13,6 +17,10 @@
       - http:
           path: update/color/{id}
           method: put
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   deleteColor:
     handler: functions/color/deleteColor.main
@@ -21,6 +29,10 @@
       - http:
           path: delete/color/{id}
           method: delete
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   getColor:
     handler: functions/color/getColor.main
