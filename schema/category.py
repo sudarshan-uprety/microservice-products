@@ -1,4 +1,6 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
+
+from models.admins import Admin
 
 
 class CategoryCreate(BaseModel):
@@ -6,6 +8,7 @@ class CategoryCreate(BaseModel):
     name: str
     description: str
     status: bool
+    created_by: str
 
 
 class CategoryUpdate(BaseModel):

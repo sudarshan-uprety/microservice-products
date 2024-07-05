@@ -1,6 +1,7 @@
-from mongoengine import StringField, BooleanField, DateTimeField
+from mongoengine import StringField, BooleanField, ReferenceField
 
 from models.base import CommonDocument
+from models import admins
 
 
 class Category(CommonDocument):
@@ -8,6 +9,7 @@ class Category(CommonDocument):
     name = StringField()
     description = StringField()
     status = BooleanField(default=True)
+    created_by = ReferenceField(admins.Admin)
 
     meta = {"collection": "categories"}
 
@@ -19,5 +21,6 @@ class Category(CommonDocument):
             "id": str(self.id),
             "name": self.name,
             "description": self.description,
+            "created_by": str(self.created_by.id) if self.created_by else None,
             "status": self.status
         }

@@ -1,19 +1,21 @@
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.category import Category
-from utils.database import db_config
+from models.admins import Admin
 from schema.category import CategoryCreateUpdateResponse, CategoryUpdate
 from utils.exception_decorator import error_handler
+from utils.middleware import admin_login, update_element
 from utils.response import respond_error, respond_success
-from utils import constant, helpers, get_obj
+from utils import constant, helpers
 
 
 @error_handler
-def main(event: APIGatewayProxyEventV2, context: LambdaContext):
+@admin_login
+def main(event: LambdaContext, context: LambdaContext, admin: Admin):
     path = event.get("path")
 
     if "/update/category/" in path:
-        return update_category(event, context)
+        return update_category(event, context, user=admin, model=Category)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -24,16 +26,14 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
         )
 
 
-def update_category(event: LambdaContext, context: LambdaContext):
+@update_element
+def update_category(event: LambdaContext, context: LambdaContext, **kwargs):
     input_data = helpers.load_json(event=event)
-    category_id = event.get("pathParameters", {}).get("id")
 
     # validate incoming data
     update_data = CategoryUpdate(**input_data)
 
-    db_config()
-
-    obj = get_obj.get_obj_or_404(model=Category, id=category_id)
+    obj = kwargs.get('element')
     obj.name = update_data.name
     obj.description = update_data.description
     obj.status = update_data.status
