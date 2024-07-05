@@ -6,7 +6,6 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
 
 from utils.database import db_config
 from models.size import Size
-from schema.size import GetSizeResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, object_fetch, pagination

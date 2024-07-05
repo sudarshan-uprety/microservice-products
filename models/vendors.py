@@ -1,15 +1,16 @@
 from models.base import CommonDocument
-from mongoengine import StringField, BooleanField
+from mongoengine import StringField, BooleanField, EmailField
 
 
 class Vendors(CommonDocument):
     id = StringField(primary_key=True)
+    username = StringField(unique=True)
     store_name = StringField()
     address = StringField()
     city = StringField()
     state = StringField()
     phone = StringField()
-    email = StringField()
+    email = EmailField(unique=True)
     is_active = BooleanField(default=False)
 
     meta = {"collection": "vendors"}
@@ -21,6 +22,7 @@ class Vendors(CommonDocument):
         return {
             "vendor_id": self.id,
             "store_name": self.store_name,
+            "username": self.username,
             "address": self.address,
             "city": self.city,
             "state": self.state,

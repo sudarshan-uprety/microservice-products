@@ -16,6 +16,10 @@
       - http:
           path: create/size
           method: post
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   updateSize:
     handler: functions/size/updateSize.main
@@ -24,6 +28,10 @@
       - http:
           path: update/size/{id}
           method: put
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   deleteSize:
     handler: functions/size/deleteSize.main
@@ -32,6 +40,10 @@
       - http:
           path: delete/size/{id}
           method: delete
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
 
   getSizes:
     handler: functions/color/getSize.main

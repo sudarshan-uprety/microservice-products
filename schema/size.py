@@ -5,6 +5,7 @@ class SizeCreate(BaseModel):
     name: str
     description: str
     status: bool
+    created_by: str
 
 
 class SizeUpdate(BaseModel):
