@@ -5,7 +5,7 @@ from mongoengine import StringField, BooleanField, EmailField
 class Admin(CommonDocument):
     id = StringField(primary_key=True)
     name = StringField()
-    username: StringField(unique=True)
+    username = StringField(unique=True)
     address = StringField()
     city = StringField()
     state = StringField()

@@ -3,6 +3,7 @@ from mongoengine import DoesNotExist
 from aws_lambda_powertools.event_handler.exceptions import UnauthorizedError
 
 from utils.database import db_config
+from utils import helpers
 
 from models.vendors import Vendors
 from models.admins import Admin
@@ -58,14 +59,14 @@ def update_element(func):
 def verify_admin(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        print('args', args)
-        print('kwargs', kwargs)
         try:
             db_config()
-            admin_id = args[0]['requestContext']['authorizer']['claims']['sub']
-            admin = Admin.objects.get(id=admin_id, is_deleted=False)
+            body = helpers.load_json(event=args[0])
+            username = body['username']
+            admin = Admin.objects.get(username=username, is_deleted=False)
             if admin.is_active:
                 raise ValueError("Admin is already active.")
+            kwargs['body'] = body
             kwargs['admin'] = admin
             return func(*args, **kwargs)
         except DoesNotExist:
@@ -78,11 +79,13 @@ def verify_vendor(func):
     def wrapper(*args, **kwargs):
         try:
             db_config()
-            vendor_id = args[0]['requestContext']['authorizer']['claims']['sub']
-            vendor = Vendors.objects.get(id=vendor_id, is_deleted=False)
+            body = helpers.load_json(event=args[0])
+            username = body['username']
+            vendor = Vendors.objects.get(username=username, is_deleted=False)
             if vendor.is_active:
                 raise ValueError("Vendor is already active.")
             kwargs['vendor'] = vendor
+            kwargs['body'] = body
             return func(*args, **kwargs)
         except DoesNotExist:
             raise DoesNotExist("Vendor does not exist")
