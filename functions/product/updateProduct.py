@@ -37,14 +37,20 @@ def update_product(event: LambdaContext, context: LambdaContext):
 
     product_obj = get_obj.get_obj_or_404(model=Products, id=product_id)
     if product_obj.vendor.id == vendor.id:
+
+        validation_data = input_data.copy()
+        validation_data['vendor'] = str(vendor.id)
+        validation_data['image'] = "placeholder_for_validation"
+
+        # validation for incoming data.
+        product_details = ProductCreate(**validation_data)
+
         # delete the existing image from s3
         s3.delete_image(product_obj.image)
 
         image_url = s3.upload_image(image=image)
 
-        # inject vendor and new image url to the incoming data
-        input_data['vendor'] = vendor.id
-        input_data['image'] = image_url
+        product_details.image = image_url
 
         product_update = ProductCreate(**input_data)
 

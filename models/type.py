@@ -1,12 +1,14 @@
-from mongoengine import StringField, BooleanField, DateTimeField
+from mongoengine import StringField, BooleanField, ReferenceField
 
 from models.base import CommonDocument
+from models import admins
 
 
 class Type(CommonDocument):
     """Category model"""
     name = StringField()
     description = StringField()
+    created_by = ReferenceField(admins.Admin)
     status = BooleanField(default=True)
 
     meta = {"collection": "types"}
