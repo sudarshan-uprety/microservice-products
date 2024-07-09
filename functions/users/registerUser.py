@@ -123,6 +123,7 @@ def verify_user(event: LambdaContext, context: LambdaContext, **kwargs):
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         vendor = kwargs['vendor']
+        vendor.is_active = True
         vendor.save()
 
     return respond_success(
