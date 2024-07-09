@@ -36,15 +36,16 @@ def create_product(event: LambdaContext, context: LambdaContext):
         vendor_sub=event['requestContext']['authorizer']['claims']['sub']
     )
 
-    # save image to s3
-    image_url = s3.upload_image(image)
-
-    # inject vendor and image url to incoming data
-    input_data['vendor'] = vendor.id
-    input_data['image'] = image_url
+    validation_data = input_data.copy()
+    validation_data['vendor'] = str(vendor.id)
+    validation_data['image'] = "placeholder_for_validation"
 
     # validation for incoming data.
-    product_details = ProductCreate(**input_data)
+    product_details = ProductCreate(**validation_data)
+
+    image_url = s3.upload_image(image)
+
+    product_details.image = image_url
 
     # Create product obj and save
     product = Products(**product_details.dict())

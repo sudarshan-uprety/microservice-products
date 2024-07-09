@@ -63,7 +63,7 @@ def login_user(event: LambdaContext, context: LambdaContext):
         success=True,
         data=token_response,
         warning=None,
-        message="Fetched access and refresh token",
+        message="User logged in.",
     )
 
 

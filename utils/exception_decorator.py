@@ -15,34 +15,34 @@ def error_handler(func):
             to_return = func(*args, **kwargs)
         except DoesNotExist as err:
             return response.error_response(
-                status_code=constant.ERROR_NOT_FOUND, message=err.args[0]
+                status_code=constant.ERROR_NOT_FOUND, message=err.args[0], errors=err.args[0]
             )
         except FieldDoesNotExist as err:
             return response.error_response(
-                status_code=constant.ERROR_FOUND, message=err.args[0]
+                status_code=constant.ERROR_FOUND, message=err.args[0], errors=err.args[0]
             )
         except ValidationError as err:
             return response.error_response(
-                status_code=constant.ERROR_FOUND, message=err.args[0]
+                status_code=constant.ERROR_FOUND, message=err.args[0], errors=err.args[0]
             )
         except ServerError as err:
             return response.error_response(
-                status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=constant.ERROR_SERVER_DOWN
+                status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=constant.ERROR_SERVER_DOWN, errors=err.args
             )
         except CustomException as err:
             return response.error_response(
-                status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=err
+                status_code=constant.ERROR_INTERNAL_SERVER_ERROR, message=err, errors="Something went wrong"
             )
         except PydanticError as err:
             msg = helpers.pydantic_error(err)
             return response.error_response(
-                status_code=constant.ERROR_BAD_REQUEST, message=msg, errors=[]
+                status_code=constant.ERROR_BAD_REQUEST, message="Invalid data", errors=msg
             )
         except botocore.exceptions.ClientError as err:
             return response.error_response(
                 status_code=constant.ERROR_BAD_REQUEST,
                 message=str(err.response["Error"]["Message"]),
-                errors=str(err)
+                errors=str(err.response["Error"]["Message"])
             )
         except UnauthorizedError as err:
             return response.error_response(
