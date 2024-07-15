@@ -7,7 +7,7 @@ from schema.category import GetCategoryResponse
 from schema.size import GetSizeResponse
 
 
-def product_fetch(products):
+def fetch_all_products(products):
     if not isinstance(products, (list, QuerySet)):
         products = [products]
     product_responses = [
@@ -27,7 +27,26 @@ def product_fetch(products):
         ).dict()
         for product in products
     ]
-    return product_responses[0] if len(product_responses) == 1 else product_responses
+    return product_responses
+
+
+def fetch_product(product):
+    print(product)
+    product = GetProductResponse(
+        id=str(product.id),
+        name=product.name,
+        price=product.price,
+        description=product.description,
+        image=product.image,
+        category=product.category.id if product.category else None,
+        stock=product.stock,
+        status=product.status,
+        size=product.size.id if product.size else None,
+        color=product.color.id if product.color else None,
+        type=product.type.id if product.type else None,
+        vendor=product.vendor.id if product.vendor else None
+    ).dict()
+    return product
 
 
 def type_fetch(types):
@@ -43,7 +62,7 @@ def type_fetch(types):
         ).dict()
         for types in types
     ]
-    return type_responses[0] if len(type_responses) == 1 else type_responses
+    return type_responses
 
 
 def color_fetch(colors):
@@ -59,7 +78,7 @@ def color_fetch(colors):
         ).dict()
         for color in colors
     ]
-    return color_responses[0] if len(color_responses) == 1 else color_responses
+    return color_responses
 
 
 def category_fetch(categories):
@@ -75,7 +94,7 @@ def category_fetch(categories):
         ).dict()
         for category in categories
     ]
-    return category_responses[0] if len(category_responses) == 1 else category_responses
+    return category_responses
 
 
 def size_fetch(sizes):
@@ -91,4 +110,4 @@ def size_fetch(sizes):
         ).dict()
         for size in sizes
     ]
-    return size_responses[0] if len(size_responses) == 1 else size_responses
+    return size_responses
