@@ -50,7 +50,7 @@ def get_all_products(event: APIGatewayProxyEventV2, context: LambdaContext):
         Q(vendor__in=active_vendors)
     ).limit(limit).skip(skip)
 
-    product_response = object_fetch.product_fetch(products=products)
+    product_response = object_fetch.fetch_all_products(products=products)
 
     return respond_success(
         data=product_response,
@@ -68,9 +68,9 @@ def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):
 
     db_config()
 
-    product = Products.objects.get(id=product_id, is_deleted=False, is_active=True)
+    product = Products.objects.get(id=product_id, is_deleted=False, status=True)
 
-    product_response = object_fetch.product_fetch(products=product)
+    product_response = object_fetch.fetch_product(product=product)
 
     return respond_success(
         data=product_response,
