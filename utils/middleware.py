@@ -24,6 +24,36 @@ def admin_login(func):
     return wrapper
 
 
+def vendor_check(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            db_config()
+            body = helpers.load_json(args[0])
+            vendor = Vendors.objects.get(username=body['username'])
+            if not vendor.is_active:
+                raise ValueError("Vendor is not active")
+        except DoesNotExist:
+            raise DoesNotExist("Vendor does not exist")
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def admin_check(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            db_config()
+            body = helpers.load_json(args[0])
+            admin = Admin.objects.get(username=body['username'])
+            if not admin.is_active:
+                raise ValueError("Admin is not active")
+        except DoesNotExist:
+            raise DoesNotExist("Admin does not exist")
+        return func(*args, **kwargs)
+    return wrapper
+
+
 def vendors_login(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -32,7 +62,7 @@ def vendors_login(func):
             vendor = Vendors.objects.get(id=args[0]['requestContext']['authorizer']['claims']['sub'], is_deleted=False)
             if not vendor.is_active:
                 raise ValueError("Admin is not active")
-            kwargs['admin'] = vendor
+            kwargs['vendor'] = vendor
         except DoesNotExist:
             raise DoesNotExist("Vendor does not exist")
         return func(*args, **kwargs)

@@ -9,12 +9,20 @@
           path: verify/user
           method: post
 
-  loginUser:
+  loginVendor:
     handler: functions/users/loginUser.main
     memorySize: 128
     events:
       - http:
-          path: user/login
+          path: vendor/login
+          method: post
+
+  loginAdmin:
+    handler: functions/users/loginUser.main
+    memorySize: 128
+    events:
+      - http:
+          path: admin/login
           method: post
 
   userDetail:
