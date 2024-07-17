@@ -5,8 +5,9 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 from models.products import Products
 from schema.product import ProductCreate, ProductCreateUpdateResponse
 from utils.response import respond_success, respond_error
-from utils import helpers, get_obj, database, decrypt_payload, s3
+from utils import get_obj, s3
 from utils.exception_decorator import error_handler
+from utils.middleware import update_element
 
 
 @error_handler
@@ -14,7 +15,7 @@ def main(event: LambdaContext, context: LambdaContext):
     path = event.get("path")
 
     if "/update/product" in path:
-        return update_product(event, context)
+        return update_product(event, context, model=Products)
     else:
         return {
             "statusCode": 400,
@@ -22,15 +23,8 @@ def main(event: LambdaContext, context: LambdaContext):
         }
 
 
-def update_product(event: LambdaContext, context: LambdaContext):
-    product_id = event.get("pathParameters", {}).get("id")
-    input_data, image = decrypt_payload.decrypt_payload(event=event)
-
-    database.db_config()
-
-    vendor = helpers.vendor_check(
-        vendor_sub=event['requestContext']['authorizer']['claims']['sub']
-    )
+@update_element
+def update_product(event: LambdaContext, context: LambdaContext, model: Products):
 
     product_obj = get_obj.get_obj_or_404(model=Products, id=product_id)
     if product_obj.vendor.id == vendor.id:

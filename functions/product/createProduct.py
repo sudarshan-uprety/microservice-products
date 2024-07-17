@@ -6,6 +6,7 @@ from schema.product import ProductCreate, ProductCreateUpdateResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, helpers, decrypt_payload, s3
+from utils.middleware import vendors_login
 
 
 @error_handler
@@ -24,26 +25,16 @@ def main(event: LambdaContext, context: LambdaContext):
         )
 
 
-def create_product(event: LambdaContext, context: LambdaContext):
-    input_data, image = decrypt_payload.decrypt_payload(event=event)
+@vendors_login
+def create_product(event: LambdaContext, context: LambdaContext, **kwargs):
+    input_data = helpers.load_json(event=event)
 
     db_config()
-
-    # check if vendor is active or not
-    vendor = helpers.vendor_check(
-        vendor_sub=event['requestContext']['authorizer']['claims']['sub']
-    )
-
-    validation_data = input_data.copy()
-    validation_data['vendor'] = str(vendor.id)
-    validation_data['image'] = "placeholder_for_validation"
+    input_data['vendor'] = kwargs['vendor'].id
+    print(input_data)
 
     # validation for incoming data.
-    product_details = ProductCreate(**validation_data)
-
-    image_url = s3.upload_image(image)
-
-    product_details.image = image_url
+    product_details = ProductCreate(**input_data)
 
     # Create product obj and save
     product = Products(**product_details.dict())
