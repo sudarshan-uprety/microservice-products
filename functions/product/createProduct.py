@@ -31,7 +31,6 @@ def create_product(event: LambdaContext, context: LambdaContext, **kwargs):
 
     db_config()
     input_data['vendor'] = kwargs['vendor'].id
-    print(input_data)
 
     # validation for incoming data.
     product_details = ProductCreate(**input_data)

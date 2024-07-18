@@ -27,7 +27,7 @@
     events:
       - http:
           path: update/product/{id}
-          method: put
+          method: patch
           authorizer:
             name: CognitoUserPoolAuthorizer
             type: COGNITO_USER_POOLS

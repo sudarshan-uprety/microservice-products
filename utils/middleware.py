@@ -61,7 +61,7 @@ def vendors_login(func):
             db_config()
             vendor = Vendors.objects.get(id=args[0]['requestContext']['authorizer']['claims']['sub'], is_deleted=False)
             if not vendor.is_active:
-                raise ValueError("Admin is not active")
+                raise ValueError("Vendor is not active")
             kwargs['vendor'] = vendor
         except DoesNotExist:
             raise DoesNotExist("Vendor does not exist")
@@ -83,6 +83,23 @@ def update_element(func):
             return func(*args, **kwargs)
         except DoesNotExist:
             raise DoesNotExist("Element does not exist")
+    return wrapper
+
+
+def update_product(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        id = kwargs['event']['pathParameters']['id']
+        obj_class = kwargs.get("model")
+        current_vendor = kwargs.get('vendor')
+        try:
+            product = obj_class.objects.get(id=id, is_deleted=False)
+            if str(product.vendor.id) != str(current_vendor.id):
+                raise UnauthorizedError("You are not authorized to update/delete this element.")
+            kwargs['product'] = product
+            return func(*args, **kwargs)
+        except DoesNotExist:
+            raise DoesNotExist("Product does not exist")
     return wrapper
 
 
