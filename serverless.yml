@@ -13,7 +13,7 @@ provider:
 plugins:
 #  - serverless-aws-documentation
   - serverless-dotenv-plugin
-  - serverless-offline
+#  - serverless-offline
   - serverless-python-requirements
   - serverless-prune-plugin
   # - serverless-domain-manager
@@ -27,6 +27,7 @@ functions:
   - ${file(functions/users/index.yml)}
   - ${file(functions/type/index.yml)}
   - ${file(functions/color/index.yml)}
+  - ${file(functions/s3/index.yml)}
 
 custom:
   cognitoUserPoolArn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}

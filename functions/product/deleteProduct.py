@@ -3,17 +3,18 @@ import json
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.products import Products
-from utils.database import db_config
-from utils.get_obj import get_obj_or_404
-from utils.response import respond_success, respond_error
-from utils import helpers, constant
+from utils.response import respond_success
+from utils.exception_decorator import error_handler
+from utils.middleware import vendors_login, update_product
 
 
-def main(event: LambdaContext, context: LambdaContext):
+@error_handler
+@vendors_login
+def main(event: LambdaContext, context: LambdaContext, **kwargs):
     path = event.get("path")
 
     if "/delete/product" in path:
-        return delete_product(event, context)
+        return delete_product(event=event, context=context, model=Products, vendor=kwargs['vendor'])
     else:
         return {
             "statusCode": 400,
@@ -21,32 +22,17 @@ def main(event: LambdaContext, context: LambdaContext):
         }
 
 
-def delete_product(event: LambdaContext, context: LambdaContext):
-    product_id = event.get("pathParameters", {}).get("id")
+@update_product
+def delete_product(event: LambdaContext, context: LambdaContext, **kwargs):
+    product = kwargs["product"]
 
-    db_config()
+    product.is_deleted = True
+    product.save()
 
-    # fetch vendor id from the lambda event
-    vendor = helpers.vendor_check(vendor_sub=event['requestContext']['authorizer']['claims']['sub'])
-
-    obj = get_obj_or_404(Products, id=product_id)
-
-    if obj.vendor.id == vendor.id:
-        obj.is_deleted = True
-        obj.save()
-
-        return respond_success(
-            status_code=200,
-            data=None,
-            success=True,
-            message="Color deleted successfully",
-            warning=None
-        )
-    else:
-        return respond_error(
-            status_code=constant.ERROR_BAD_REQUEST,
-            data=None,
-            success=False,
-            message="Current vendor is not the owner of the product."
-        )
-
+    return respond_success(
+        status_code=200,
+        data=None,
+        success=True,
+        message="Product deleted successfully",
+        warning=f"Product of id {product.id} was deleted"
+    )

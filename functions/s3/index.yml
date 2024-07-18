@@ -1,0 +1,23 @@
+  generatePUTPresignURL:
+    handler: functions/s3/s3.main
+    memorySize: 128
+    events:
+      - http:
+          path: generate/put
+          method: get
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
+
+  generateDELETEPresignURL:
+    handler: functions/s3/s3.main
+    memorySize: 128
+    events:
+      - http:
+          path: generate/delete
+          method: post
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
