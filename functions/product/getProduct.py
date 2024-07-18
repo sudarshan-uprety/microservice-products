@@ -12,6 +12,7 @@ from models.vendors import Vendors
 from utils.exception_decorator import error_handler
 from utils.response import respond_success
 from utils import constant, object_fetch, pagination, helpers
+from utils.middleware import vendors_login, admin_login
 
 
 @error_handler
@@ -27,6 +28,9 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
     elif path == "/get/my/products":
         return get_my_products(event, context)
 
+    elif path == "/get/admin/products":
+        return admin_products(event, context)
+
     else:
         return {
             "statusCode": 400,
@@ -35,19 +39,20 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
 
 
 def get_all_products(event: APIGatewayProxyEventV2, context: LambdaContext):
-    # pagination
+    # pagination and query filter
     limit, skip, current_page = pagination.pagination(event=event)
-
-    # call the db
     db_config()
+    query_filter = pagination.query_filter(event=event)
+
+    base_query = Q(is_deleted=False, status=True)
 
     # first get the active vendors
     active_vendors = Vendors.objects.filter(is_active=True, is_deleted=False).values_list('id')
 
     products = Products.objects.filter(
-        Q(status=True) &
-        Q(is_deleted=False) &
-        Q(vendor__in=active_vendors)
+        Q(vendor__in=active_vendors) &
+        base_query &
+        query_filter
     ).limit(limit).skip(skip)
 
     product_response = object_fetch.fetch_all_products(products=products)
@@ -81,21 +86,19 @@ def get_product_by_id(event: APIGatewayProxyEventV2, context: LambdaContext):
     )
 
 
-def get_my_products(event: APIGatewayProxyEventV2, context: LambdaContext):
-    # pagination
+@vendors_login
+def get_my_products(event: APIGatewayProxyEventV2, context: LambdaContext, **kwargs):
+    # pagination and query filter
     limit, skip, current_page = pagination.pagination(event=event)
-
-    # call the db
-    db_config()
+    query_filter = pagination.query_filter(event=event)
 
     # fetch vendor id from the lambda event
-    vendor = helpers.vendor_check(vendor_sub=event['requestContext']['authorizer']['claims']['sub'])
+    vendor = kwargs['vendor']
 
-    products = Products.objects.filter(
-        vendor=vendor, is_deleted=False
-    ).limit(limit).skip(skip)
+    base_query = Q(vendor=vendor, is_deleted=False)
+    products = Products.objects(base_query & query_filter).limit(limit).skip(skip)
 
-    products_response = object_fetch.product_fetch(products=products)
+    products_response = object_fetch.fetch_all_products(products=products)
 
     return respond_success(
         data=products_response,
@@ -105,4 +108,24 @@ def get_my_products(event: APIGatewayProxyEventV2, context: LambdaContext):
         warning=None,
         total_page=products.count() / 10,
         current_page=current_page
+    )
+
+
+@admin_login
+def admin_products(event: APIGatewayProxyEventV2, context: LambdaContext):
+    # pagination and query filter
+    limit, skip, current_page = pagination.pagination(event=event)
+    query_filter = pagination.query_filter(event=event)
+
+    base_query = Q(is_deleted=False, status=True)
+    products = Products.objects.filter(base_query & query_filter).limit(limit).skip(skip)
+
+    products_response = object_fetch.fetch_all_products(products=products)
+
+    return respond_success(
+        data=products_response,
+        success=True,
+        message='Products retrieved',
+        status_code=constant.SUCCESS_RESPONSE,
+        warning=None
     )

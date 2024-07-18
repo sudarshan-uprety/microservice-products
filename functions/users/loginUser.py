@@ -5,14 +5,17 @@ from schema import user, admins
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, variables, helpers
+from utils.middleware import vendor_check, admin_check
 
 
 @error_handler
 def main(event: LambdaContext, context: LambdaContext):
     path = event.get("path")
 
-    if path == "/user/login":
-        return login_user(event, context)
+    if path == "/vendor/login":
+        return login_vendor(event, context)
+    if path == "/admin/login":
+        return login_admin(event, context)
     elif path == "/user/detail":
         return user_details(event, context)
     elif path == "/admin/detail":
@@ -31,7 +34,45 @@ def main(event: LambdaContext, context: LambdaContext):
         )
 
 
-def login_user(event: LambdaContext, context: LambdaContext):
+@vendor_check
+def login_vendor(event: LambdaContext, context: LambdaContext):
+    input_data = helpers.load_json(event=event)
+
+    # validation for incoming data.
+    login_detail = user.Login(**input_data)
+
+    # create a boto3 object
+    client = helpers.boto3_cognito_client()
+
+    # Register user in cognito
+    response = client.initiate_auth(
+        ClientId=variables.CognitoClientId,
+        AuthFlow='USER_PASSWORD_AUTH',
+        AuthParameters={
+            'USERNAME': login_detail.username,
+            'PASSWORD': login_detail.password
+        }
+    )
+
+    # response
+    token_response = user.UserToken(
+        access_token=response['AuthenticationResult']['AccessToken'],
+        refresh_token=response['AuthenticationResult']['RefreshToken'],
+        id_token=response['AuthenticationResult']['IdToken'],
+    ).dict()
+
+    # Return success response
+    return respond_success(
+        status_code=constant.SUCCESS_RESPONSE,
+        success=True,
+        data=token_response,
+        warning=None,
+        message="User logged in.",
+    )
+
+
+@admin_check
+def login_admin(event: LambdaContext, context: LambdaContext):
     input_data = helpers.load_json(event=event)
 
     # validation for incoming data.

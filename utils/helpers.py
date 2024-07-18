@@ -1,10 +1,10 @@
 import json
+import uuid
 import boto3
-from mongoengine.errors import DoesNotExist
 from models.vendors import Vendors
 from models.admins import Admin
-from utils.response import respond_error
-from utils import variables, constant
+from utils import variables
+
 
 
 def pydantic_error(err):
@@ -102,3 +102,7 @@ def admin_check(admin_sub):
     if not admin.is_active:
         raise ValueError("Admin is not active")
     return admin
+
+
+def generate_8digit_uuid():
+    return str(uuid.uuid4())[:8]

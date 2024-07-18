@@ -3,18 +3,20 @@ import json
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.products import Products
-from schema.product import ProductCreate, ProductCreateUpdateResponse
-from utils.response import respond_success, respond_error
-from utils import helpers, get_obj, database, decrypt_payload, s3
+from schema.product import ProductCreateUpdateResponse, ProductUpdate
+from utils.response import respond_success
 from utils.exception_decorator import error_handler
+from utils.middleware import update_product, vendors_login
+from utils import helpers
 
 
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+@vendors_login
+def main(event: LambdaContext, context: LambdaContext, **kwargs):
     path = event.get("path")
 
     if "/update/product" in path:
-        return update_product(event, context)
+        return update_product(event=event, context=context, model=Products, vendor=kwargs['vendor'])
     else:
         return {
             "statusCode": 400,
@@ -22,63 +24,33 @@ def main(event: LambdaContext, context: LambdaContext):
         }
 
 
-def update_product(event: LambdaContext, context: LambdaContext):
-    product_id = event.get("pathParameters", {}).get("id")
-    input_data, image = decrypt_payload.decrypt_payload(event=event)
+@update_product
+def update_product(event: LambdaContext, context: LambdaContext, **kwargs):
+    input_data = helpers.load_json(event=event)
+    product = kwargs["product"]
 
-    database.db_config()
+    product_data = ProductUpdate(**input_data)
 
-    vendor = helpers.vendor_check(
-        vendor_sub=event['requestContext']['authorizer']['claims']['sub']
+    for key, value in product_data.dict(exclude_none=True).items():
+        setattr(product, key, value)
+    product.save()
+
+    response_data = ProductCreateUpdateResponse(
+        id=str(product.id),
+        name=product.name,
+        description=product.description,
+        image=product.image,
+        price=product.price,
+        category=product.category.to_dict(),
+        status=product.status,
+        size=product.size.to_dict() if product.size else None,
+        color=product.color.to_dict() if product.color else None,
+        type=product.type.to_dict(),
     )
 
-    product_obj = get_obj.get_obj_or_404(model=Products, id=product_id)
-    if product_obj.vendor.id == vendor.id:
-
-        validation_data = input_data.copy()
-        validation_data['vendor'] = str(vendor.id)
-        validation_data['image'] = "placeholder_for_validation"
-
-        # validation for incoming data.
-        product_details = ProductCreate(**validation_data)
-
-        # delete the existing image from s3
-        s3.delete_image(product_obj.image)
-
-        image_url = s3.upload_image(image=image)
-
-        product_details.image = image_url
-
-        product_update = ProductCreate(**input_data)
-
-        for field, value in product_update.dict(exclude_unset=True).items():
-            setattr(product_obj, field, value)
-        product_obj.save()
-
-        response_data = ProductCreateUpdateResponse(
-            id=str(product_obj.id),
-            name=product_obj.name,
-            description=product_obj.description,
-            image=product_obj.image,
-            price=product_obj.price,
-            category=product_obj.category.to_dict(),
-            status=product_obj.status,
-            size=product_obj.size.to_dict() if product_obj.size else None,
-            color=product_obj.color.to_dict() if product_obj.color else None,
-            type=product_obj.type.to_dict(),
-        )
-
-        return respond_success(
-            message='Product updated successfully',
-            data=response_data.dict(),
-            status_code=200,
-            success=True
-        )
-
-    else:
-        return respond_error(
-            data=None,
-            status_code=400,
-            message='Current vendor is not the owner of the product.',
-            success=False
-        )
+    return respond_success(
+        message='Product updated successfully',
+        data=response_data.dict(),
+        status_code=200,
+        success=True
+    )
