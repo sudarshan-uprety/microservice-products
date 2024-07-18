@@ -27,7 +27,7 @@
     events:
       - http:
           path: update/product/{id}
-          method: put
+          method: patch
           authorizer:
             name: CognitoUserPoolAuthorizer
             type: COGNITO_USER_POOLS
@@ -51,6 +51,18 @@
     events:
       - http:
           path: get/my/products
+          method: get
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
+
+  adminProduct:
+    handler: functions/product/getProduct.main
+    memorySize: 128
+    events:
+      - http:
+          path: get/admin/products
           method: get
           authorizer:
             name: CognitoUserPoolAuthorizer
