@@ -87,9 +87,6 @@ jobs:
 
       - name: Set AWS credentials and deploy
         run: |
-#          echo "AWS_ACCESS_KEY_ID_DEV: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}"
-#          echo "AWS_SECRET_ACCESS_KEY_DEV: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}"
-
           if [ "${{ github.event_name }}" == "push" ]; then
             if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
               export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
@@ -109,7 +106,6 @@ jobs:
           else
             echo "Skipping deployment for event: ${{ github.event_name }}"
           fi
-
           # Print AWS credentials for verification
 
 
