@@ -31,6 +31,8 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
     elif path == "/get/admin/products":
         return admin_products(event, context)
 
+    elif "/get/vendor/product" in path:
+        return vendor_product_details(event, context)
     else:
         return {
             "statusCode": 400,
@@ -126,6 +128,22 @@ def admin_products(event: APIGatewayProxyEventV2, context: LambdaContext):
         data=products_response,
         success=True,
         message='Products retrieved',
+        status_code=constant.SUCCESS_RESPONSE,
+        warning=None
+    )
+
+
+@vendors_login
+def vendor_product_details(event: APIGatewayProxyEventV2, context: LambdaContext, **kwargs):
+    product_id = event.get("pathParameters", {}).get("id")
+
+    product = Products.objects.get(id=product_id, is_deleted=False, vendor=kwargs['vendor'])
+    product_response = object_fetch.fetch_product(product=product)
+
+    return respond_success(
+        data=product_response,
+        success=True,
+        message='Product retrieved',
         status_code=constant.SUCCESS_RESPONSE,
         warning=None
     )
