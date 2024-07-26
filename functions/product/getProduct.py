@@ -65,7 +65,7 @@ def get_all_products(event: APIGatewayProxyEventV2, context: LambdaContext):
         message='Products retrieved',
         status_code=constant.SUCCESS_RESPONSE,
         warning=None,
-        total_page=products.count()/10,
+        total_page=products.count() / 10,
         current_page=current_page
     )
 
