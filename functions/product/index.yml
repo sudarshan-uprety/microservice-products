@@ -68,3 +68,15 @@
             name: CognitoUserPoolAuthorizer
             type: COGNITO_USER_POOLS
             arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
+
+  vendorProduct:
+    handler: functions/product/getProduct.main
+    memorySize: 128
+    events:
+      - http:
+          path: get/vendor/product/{id}
+          method: get
+          authorizer:
+            name: CognitoUserPoolAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
