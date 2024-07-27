@@ -4,16 +4,18 @@ from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import
 )
 
 from models.products import Products
+from schema.events import Event
+from utils.database import db_config
 from utils.exception_decorator import error_handler
-from utils.response import respond_error
+from utils.response import respond_error, respond_success
 from utils import constant, helpers
 
 
 @error_handler
-def main(event: APIGatewayProxyEventV2, context: LambdaContext):
+def main(event: LambdaContext, context: LambdaContext):
     path = event.get("path")
 
-    if path == "/events":
+    if path == "/consume/event":
         return event_handler(event, context)
 
     else:
@@ -26,18 +28,22 @@ def main(event: APIGatewayProxyEventV2, context: LambdaContext):
         )
 
 
-def event_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
+def event_handler(event: LambdaContext, context: LambdaContext):
     input_data = helpers.load_json(event=event)
 
-    # checking the condition for the operation in json payload
+    # calling the database function
+    db_config()
+
+    data = Event(**input_data)
 
     operation = input_data.get("operation")
-    product = input_data.get("product")
-    product_id = product.get("product_id")
+    quantity = input_data.get("quantity")
+    product = data.product
+
     if operation == "decrease":
-        pass
+        response = product_decrease_handler(product=product, quantity=quantity)
     elif operation == "increase":
-        pass
+        response = product_increase_handler(product=product, quantity=quantity)
     else:
         return respond_error(
             status_code=constant.ERROR_BAD_REQUEST,
@@ -45,7 +51,28 @@ def event_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             data=None,
             success=False
         )
+    return response
 
 
+def product_decrease_handler(product: Products, quantity: int) -> bool:
+    product.stock -= quantity
+    product.save()
+    return respond_success(
+        status_code=constant.SUCCESS_UPDATED,
+        success=True,
+        data=None,
+        warning=None,
+        message="Product decreased.",
+    )
 
 
+def product_increase_handler(product: Products, quantity: int) -> bool:
+    product.stock += quantity
+    product.save()
+    return respond_success(
+        status_code=constant.SUCCESS_UPDATED,
+        success=True,
+        data=None,
+        warning=None,
+        message="Product increased.",
+    )

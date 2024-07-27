@@ -1,0 +1,10 @@
+  eventConsumer:
+    handler: functions/events/consumer.main
+    events:
+      - http:
+          path: consume/event
+          method: post
+#          authorizer:
+#            name: CognitoUserPoolAuthorizer
+#            type: COGNITO_USER_POOLS
+#            arn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
