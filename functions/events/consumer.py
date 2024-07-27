@@ -1,7 +1,4 @@
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
-from aws_lambda_powertools.utilities.data_classes.api_gateway_proxy_event import (
-    APIGatewayProxyEventV2,
-)
 
 from models.products import Products
 from schema.events import Event
