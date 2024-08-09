@@ -28,6 +28,7 @@ functions:
   - ${file(functions/type/index.yml)}
   - ${file(functions/color/index.yml)}
   - ${file(functions/s3/index.yml)}
+  - ${file(functions/events/index.yml)}
 
 custom:
   cognitoUserPoolArn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
