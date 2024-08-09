@@ -30,16 +30,11 @@ def event_handler(event: LambdaContext, context: LambdaContext):
 
     # calling the database function
     db_config()
-
     data = Event(**input_data)
 
-    operation = input_data.get("operation")
-    quantity = input_data.get("quantity")
-    product = data.product
-
-    if operation == "decrease":
-        response = product_decrease_handler(product=product, quantity=quantity)
-    elif operation == "increase":
+    if data.operation == "decrease":
+        response = product_decrease_handler(data=data)
+    elif data.operation == "increase":
         response = product_increase_handler(product=product, quantity=quantity)
     else:
         return respond_error(
@@ -51,9 +46,11 @@ def event_handler(event: LambdaContext, context: LambdaContext):
     return response
 
 
-def product_decrease_handler(product: Products, quantity: int) -> bool:
-    product.stock -= quantity
-    product.save()
+def product_decrease_handler(data: Event) -> bool:
+    for product in data.products:
+        product_obj = product['product']
+        product_obj.stock -= product['quantity']
+        product_obj.save()
     return respond_success(
         status_code=constant.SUCCESS_UPDATED,
         success=True,
