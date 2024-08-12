@@ -12,12 +12,10 @@ from models.vendors import Vendors
 from utils.exception_decorator import error_handler
 from utils.response import respond_success
 from utils import constant, object_fetch, pagination
-from utils.lambda_middleware import lambda_middleware
 from utils.middleware import vendors_login, admin_login
 from utils.lambda_middleware import lambda_middleware
 
 
-@lambda_middleware
 @lambda_middleware
 @error_handler
 def main(event: APIGatewayProxyEventV2, context: LambdaContext):

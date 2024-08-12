@@ -4,6 +4,7 @@ import time
 import requests
 
 from utils.variables import ENV, LOKI_URL
+
 # ContextVar to store the trace ID for the current context
 trace_id_var = ContextVar("trace_id", default="")
 
@@ -50,11 +51,6 @@ def get_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
-    # Console handler (CloudWatch will capture this)
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(CustomFormatter('%(asctime)s - %(name)s - %(levelname)s - %(trace_id)s - %(message)s'))
-
     # Loki handler
     loki_handler = SyncLokiHandler(
         url=LOKI_URL,
@@ -63,8 +59,7 @@ def get_logger(name):
     loki_handler.setLevel(logging.INFO)
     loki_handler.setFormatter(CustomFormatter('%(asctime)s - %(name)s - %(levelname)s - %(trace_id)s - %(message)s'))
 
-    # Add handlers to logger
-    logger.addHandler(console_handler)
+    # Add only the Loki handler to logger
     logger.addHandler(loki_handler)
 
     return logger
