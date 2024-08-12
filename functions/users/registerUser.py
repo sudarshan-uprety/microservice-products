@@ -7,8 +7,10 @@ from utils import constant, variables, helpers, database
 from models import vendors
 from models.admins import Admin
 from utils.middleware import verify_vendor, verify_admin
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 def main(event: LambdaContext, context: LambdaContext):
     path = event.get("path")
