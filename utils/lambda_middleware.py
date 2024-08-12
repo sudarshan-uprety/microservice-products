@@ -59,15 +59,6 @@ def lambda_middleware(handler):
             response = handler(event, context)
             process_time = time.time() - start_time
 
-            # Prepare and sanitize the response payload
-            response_payload = response.get('body')
-            if response_payload:
-                try:
-                    response_payload = json.loads(response_payload)
-                except json.JSONDecodeError:
-                    pass  # Keep it as a string if it's not JSON
-            sanitized_response_payload = sanitize_payload(response_payload)
-
             log_dict = {
                 "url": event.get('path'),
                 "method": event.get('httpMethod'),
@@ -75,8 +66,7 @@ def lambda_middleware(handler):
                 "status_code": response.get('statusCode'),
                 "trace_id": trace_id,
                 "client_ip": client_ip,
-                "request_payload": request_payload,
-                "response_payload": sanitized_response_payload
+                "request_payload": sanitize_payload(request_payload)
             }
 
             log_message = json.dumps(log_dict)
