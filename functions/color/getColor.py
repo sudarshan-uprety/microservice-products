@@ -9,8 +9,10 @@ from schema.color import GetColorResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, helpers, pagination, object_fetch
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 def main(event: APIGatewayProxyEventV2, context: LambdaContext):
     path = event.get("path")

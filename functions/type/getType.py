@@ -8,12 +8,13 @@ from utils import pagination, object_fetch
 
 from utils.database import db_config
 from models.type import Type
-from schema.type import GetTypeResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 def main(event: APIGatewayProxyEventV2, context: LambdaContext):
     path = event.get("path")
