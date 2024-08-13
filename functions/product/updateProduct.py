@@ -8,8 +8,10 @@ from utils.response import respond_success
 from utils.exception_decorator import error_handler
 from utils.middleware import update_product, vendors_login
 from utils import helpers
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 @vendors_login
 def main(event: LambdaContext, context: LambdaContext, **kwargs):

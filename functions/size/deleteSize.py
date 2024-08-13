@@ -5,8 +5,10 @@ from models.admins import Admin
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils.middleware import admin_login
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 @admin_login
 def main(event: LambdaContext, context: LambdaContext, admin: Admin):

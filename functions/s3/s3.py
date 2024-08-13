@@ -7,8 +7,10 @@ from utils import variables, constant, helpers
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from schema.s3 import S3Delete
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 def main(event: LambdaContext, context: LambdaContext):
     path = event.get("path")
