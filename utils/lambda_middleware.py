@@ -39,8 +39,23 @@ def sanitize_payload(payload):
 def lambda_middleware(handler):
     @wraps(handler)
     def wrapper(event, context):
-        trace_id = event.get('headers', {}).get("X-Trace-ID", str(uuid.uuid4()))
-        trace_id_var.set(trace_id)
+        body = event.get('body', {})
+
+        # If body is a string, try to parse it as JSON
+        if isinstance(body, str):
+            try:
+                body = json.loads(body)
+            except json.JSONDecodeError:
+                logger.debug("Failed to parse body as JSON")
+                body = {}
+
+        # Try to get trace_id from the body
+        trace_id = body.get('trace_id')
+
+        # If trace_id is not found in the body, generate a new one
+        if not trace_id:
+            trace_id = str(uuid.uuid4())
+            logger.debug(f"Generated new trace ID: {trace_id}")
 
         start_time = time.time()
         client_ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'Unknown')
@@ -84,7 +99,7 @@ def lambda_middleware(handler):
                 "url": event.get('path'),
                 "method": event.get('httpMethod'),
                 "process_time": f"{process_time:.4f}",
-                "trace_id": trace_id,
+                # "trace_id": trace_id,
                 "client_ip": client_ip,
                 "request_payload": request_payload,
             })
