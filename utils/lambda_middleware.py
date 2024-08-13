@@ -49,7 +49,11 @@ def lambda_middleware(handler):
                 logger.debug("Failed to parse body as JSON")
                 body = {}
 
-        # Try to get trace_id from the body
+        # Handle cases where body might be None
+        if body is None:
+            body = {}
+
+        # Try to get trace_id from the body, default to None if not found
         trace_id = body.get('trace_id')
 
         # If trace_id is not found in the body, generate a new one
