@@ -15,8 +15,8 @@ ENV = ENV
 
 class CustomFormatter(logging.Formatter):
     def format(self, record):
-        trace_id = trace_id_var.get()
-        record.trace_id = trace_id
+        # trace_id = trace_id_var.get()
+        # record.trace_id = trace_id
         return super().format(record)
 
 
@@ -57,7 +57,7 @@ def get_logger(name):
         labels={"service": "lambda-function", "env": ENV}
     )
     loki_handler.setLevel(logging.INFO)
-    loki_handler.setFormatter(CustomFormatter('%(asctime)s - %(name)s - %(levelname)s - %(trace_id)s - %(message)s'))
+    loki_handler.setFormatter(CustomFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
     # Add only the Loki handler to logger
     logger.addHandler(loki_handler)
