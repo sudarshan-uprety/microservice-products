@@ -6,8 +6,10 @@ from models.products import Products
 from utils.response import respond_success
 from utils.exception_decorator import error_handler
 from utils.middleware import vendors_login, update_product
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 @vendors_login
 def main(event: LambdaContext, context: LambdaContext, **kwargs):

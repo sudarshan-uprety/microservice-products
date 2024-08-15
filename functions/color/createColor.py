@@ -2,14 +2,15 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from models.color import Color
 from models.admins import Admin
-from utils.database import db_config
 from schema.color import CreateColor, ColorCreateUpdateResponse
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from utils import constant, helpers
 from utils.middleware import admin_login
+from utils.lambda_middleware import lambda_middleware
 
 
+@lambda_middleware
 @error_handler
 @admin_login
 def main(event: LambdaContext, context: LambdaContext, admin: Admin):
