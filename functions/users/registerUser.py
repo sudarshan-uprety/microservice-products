@@ -84,7 +84,7 @@ def register_user(event: LambdaContext, context: LambdaContext):
         database.db_config()
 
         vendor = vendors.Vendors(
-            id=response['UserSub'],
+            id_sub=response['UserSub'],
             store_name=input_data.name,
             username=input_data.username,
             address=input_data.address,
@@ -188,7 +188,7 @@ def register_admin(event: LambdaContext, context: LambdaContext):
         database.db_config()
 
         admin = Admin(
-            id=response['UserSub'],
+            id_sub=response['UserSub'],
             name=input_data.name,
             username=input_data.username,
             address=input_data.address,

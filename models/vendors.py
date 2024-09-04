@@ -3,7 +3,7 @@ from mongoengine import StringField, BooleanField, EmailField
 
 
 class Vendors(CommonDocument):
-    id = StringField(primary_key=True)
+    id_sub = StringField(unique=True)
     username = StringField(unique=True)
     store_name = StringField()
     address = StringField()
@@ -20,7 +20,8 @@ class Vendors(CommonDocument):
 
     def to_dict(self):
         return {
-            "vendor_id": self.id,
+            "vendor_id": str(self.id),
+            "id_sub": self.id_sub,
             "store_name": self.store_name,
             "username": self.username,
             "address": self.address,

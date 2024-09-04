@@ -59,7 +59,7 @@ def vendors_login(func):
     def wrapper(*args, **kwargs):
         try:
             db_config()
-            vendor = Vendors.objects.get(id=args[0]['requestContext']['authorizer']['claims']['sub'], is_deleted=False)
+            vendor = Vendors.objects.get(id_sub=args[0]['requestContext']['authorizer']['claims']['sub'], is_deleted=False)
             if not vendor.is_active:
                 raise ValueError("Vendor is not active")
             kwargs['vendor'] = vendor
