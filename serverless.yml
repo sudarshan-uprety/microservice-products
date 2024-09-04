@@ -50,6 +50,21 @@ custom:
     number: 1  # Keep only last version
 
 package:
-  individually: false
-  include:
-    - .env
+  individually: true
+  patterns:
+    - "!node_modules/**"
+    - "!resources/**"
+    - "!yarn.lock"
+    - "!.vscode/**"
+    - "!Readme.md"
+    - "!.serverless/**"
+    - "!serverless.yml"
+    - "!.gitignore"
+    - "!.husky/**"
+    - "!.pytest_cache/**"
+    - "!venv/**"
+    - "!.mypy_cache/**"
+    - "!package-lock.json"
+    - "package.json"
+    - "requirements.txt"
+    - ".env"
