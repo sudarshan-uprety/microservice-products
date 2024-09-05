@@ -1,5 +1,7 @@
   eventConsumer:
     handler: functions/events/consumer.main
+    layers:
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: consume/event

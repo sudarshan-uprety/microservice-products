@@ -1,24 +1,63 @@
 service: product-service
-
 useDotenv: true
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  service: ${self:service}
+  project: "product-service"
+  serverless-offline:
+    host: 0.0.0.0
+    port: 3000
+    stage: ${self:custom.stage}
+    region: ap-south-1
+    lambdaPort: 3002
+  pythonRequirements:
+    layer:
+      name: ${self:custom.service}-${self:custom.stage}-dependencies
+      description: Python requirements lambda layer
+      compatibleRuntimes:
+        - python3.10
+    slim: true
+    useStaticCache: true
+    useDownloadCache: true
+  prune:
+    automatic: true
+    number: 1
+  deploymentBucket:
+    name: product-service-${self:custom.stage}
+    serverSideEncryption: AES256
+
 provider:
   name: aws
   runtime: python3.10
-  stage: ${opt:stage, 'dev'}
+  stage: ${self:custom.stage}
   region: ap-south-1
   environment:
+    STAGE: ${self:provider.stage}
     COGNITO_USER_POOL_ID: ${env:UserPoolID}
     COGNITO_USER_POOL_CLIENT_ID: ${env:CognitoClientId}
+  timeout: 30
+  memorySize: 256
+  logRetentionInDays: 3
+
+package:
+  individually: false
+  patterns:
+    - '!node_modules/**'
+    - '!venv/**'
+    - '!.vscode/**'
+    - '!.git/**'
+    - '!tests/**'
+    - '!*.md'
+    - '!package*.json'
+  excludeDevDependencies: false
 
 plugins:
-#  - serverless-aws-documentation
   - serverless-dotenv-plugin
   - serverless-offline
   - serverless-python-requirements
   - serverless-prune-plugin
-  # - serverless-domain-manager
-#  - serverless-iam-roles-per-function
-#  - serverless-deployment-bucket
+  - serverless-deployment-bucket
 
 functions:
   - ${file(functions/product/index.yml)}
@@ -29,27 +68,3 @@ functions:
   - ${file(functions/color/index.yml)}
   - ${file(functions/s3/index.yml)}
   - ${file(functions/events/index.yml)}
-
-custom:
-  cognitoUserPoolArn: arn:aws:cognito-idp:${self:provider.region}:${env:AccountID}:userpool/${env:UserPoolID}
-  serverless-offline:
-    host: 0.0.0.0
-    port: 3000
-    stage: dev
-    region: ap-south-1
-    lambdaPort: 3002
-
-#  pythonRequirements:
-#    dockerizePip: true
-#    slim: true  # Only include necessary files
-#    strip: true  # Remove unnecessary symbols
-#    layer: true  # Use a Lambda layer for dependencies
-
-  prune:
-    automatic: true
-    number: 1  # Keep only last version
-
-package:
-  individually: false
-  include:
-    - .env
