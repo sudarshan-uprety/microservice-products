@@ -1,7 +1,7 @@
   eventConsumer:
     handler: functions/events/consumer.main
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: consume/event

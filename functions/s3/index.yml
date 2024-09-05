@@ -2,7 +2,7 @@
     handler: functions/s3/s3.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: generate/put
@@ -16,7 +16,7 @@
     handler: functions/s3/s3.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: generate/delete

@@ -2,7 +2,7 @@
     handler: functions/type/createType.main
     memorySize: 128
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: create/type
@@ -16,7 +16,7 @@
     handler: functions/type/updateType.main
     memorySize: 128
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: update/type/{id}
@@ -30,7 +30,7 @@
     handler: functions/type/deleteType.main
     memorySize: 128
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: delete/type/{id}
@@ -44,7 +44,7 @@
     handler: functions/type/getType.main
     memorySize: 128
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: get/types

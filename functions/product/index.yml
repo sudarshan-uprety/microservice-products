@@ -2,7 +2,7 @@
     handler: functions/product/getProduct.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: get/products
@@ -15,7 +15,7 @@
     handler: functions/product/createProduct.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: create/product
@@ -29,7 +29,7 @@
     handler: functions/product/updateProduct.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: update/product/{id}
@@ -43,7 +43,7 @@
     handler: functions/product/deleteProduct.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: delete/product/{id}
@@ -57,7 +57,7 @@
     handler: functions/product/getProduct.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: get/my/products
@@ -71,7 +71,7 @@
     handler: functions/product/getProduct.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: get/admin/products
@@ -85,7 +85,7 @@
     handler: functions/product/getProduct.main
     memorySize: 256
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: get/vendor/product/{id}

@@ -2,7 +2,7 @@
     handler: functions/users/registerUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: register/user
@@ -15,7 +15,7 @@
     handler: functions/users/loginUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: vendor/login
@@ -25,7 +25,7 @@
     handler: functions/users/loginUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: admin/login
@@ -35,7 +35,7 @@
     handler: functions/users/loginUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/detail
@@ -45,7 +45,7 @@
     handler: functions/users/loginUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/new/token
@@ -55,7 +55,7 @@
     handler: functions/users/loginUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/logout
@@ -65,7 +65,7 @@
     handler: functions/users/updateUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/change/password
@@ -75,7 +75,7 @@
     handler: functions/users/updateUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/update/phone
@@ -85,7 +85,7 @@
     handler: functions/users/updateUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/update/address
@@ -95,7 +95,7 @@
     handler: functions/users/updateUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/update/name
@@ -105,7 +105,7 @@
     handler: functions/users/updateUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/forget/password
@@ -115,7 +115,7 @@
     handler: functions/users/updateUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: user/confirm/forget/password
@@ -125,7 +125,7 @@
     handler: functions/users/registerUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: register/admin
@@ -138,7 +138,7 @@
     handler: functions/users/loginUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: admin/detail
@@ -148,7 +148,7 @@
     handler: functions/users/updateUser.main
     memorySize: 128
     layers:
-        - ${env:DEPENDENCY_LAYER}
+        - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: admin/update/superuser/status

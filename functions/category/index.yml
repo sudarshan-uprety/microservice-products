@@ -1,7 +1,7 @@
   createCategory:
     handler: functions/category/createCategory.main
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: create/category
@@ -14,7 +14,7 @@
   updateCategory:
     handler: functions/category/updateCategory.main
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: update/category/{id}
@@ -27,7 +27,7 @@
   deleteCategory:
     handler: functions/category/deleteCategory.main
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: delete/category/{id}
@@ -40,7 +40,7 @@
   getCategories:
     handler: functions/category/getCategory.main
     layers:
-      - ${env:DEPENDENCY_LAYER}
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: get/categories
