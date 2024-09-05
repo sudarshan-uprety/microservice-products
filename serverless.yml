@@ -29,8 +29,7 @@ custom:
     automatic: true
     number: 1
   deploymentBucket:
-    name: ${self:custom.service}-deploy-${self:custom.stage}
-    region: ap-south-1
+    name: product-service-${self:custom.stage}
     serverSideEncryption: AES256
 
 provider:
@@ -45,21 +44,6 @@ provider:
   timeout: 30
   memorySize: 256
   logRetentionInDays: 3
-  deploymentBucket: ${self:custom.deploymentBucket.name}
-
-resources:
-  Resources:
-    DeploymentBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:custom.deploymentBucket.name}
-        BucketEncryption:
-          ServerSideEncryptionConfiguration:
-            - ServerSideEncryptionByDefault:
-                SSEAlgorithm: AES256
-        Tags:
-          - Key: Name
-            Value: ${self:custom.deploymentBucket.name}
 
 package:
   individually: false
