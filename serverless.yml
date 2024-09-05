@@ -13,7 +13,6 @@ custom:
     lambdaPort: 3002
   pythonRequirements:
     slim: true
-    strip: true
     layer:
       name: ${self:custom.service}-${self:custom.stage}
       description: Python requirements lambda layer
