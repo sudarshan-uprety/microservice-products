@@ -32,7 +32,7 @@ def create_product(event: LambdaContext, context: LambdaContext, **kwargs):
     input_data = helpers.load_json(event=event)
 
     db_config()
-    input_data['vendor'] = kwargs['vendor'].id
+    input_data['vendor'] = str(kwargs['vendor'].id)
 
     # validation for incoming data.
     product_details = ProductCreate(**input_data)
