@@ -1,6 +1,8 @@
   getProduct:
     handler: functions/product/getProduct.main
     memorySize: 128
+    layers:
+      - ${self:custom.service}-${self:custom.stage}-dependencies
     events:
       - http:
           path: get/products
