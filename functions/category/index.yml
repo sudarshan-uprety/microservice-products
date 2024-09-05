@@ -1,5 +1,7 @@
   createCategory:
     handler: functions/category/createCategory.main
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: create/category
@@ -11,6 +13,8 @@
 
   updateCategory:
     handler: functions/category/updateCategory.main
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: update/category/{id}
@@ -22,6 +26,8 @@
 
   deleteCategory:
     handler: functions/category/deleteCategory.main
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: delete/category/{id}
@@ -33,6 +39,8 @@
 
   getCategories:
     handler: functions/category/getCategory.main
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: get/categories

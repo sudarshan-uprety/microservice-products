@@ -1,6 +1,8 @@
   getSize:
     handler: functions/size/getSize.main
     memorySize: 128
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: get/sizes
@@ -12,6 +14,8 @@
   createSize:
     handler: functions/size/createSize.main
     memorySize: 128
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: create/size
@@ -24,6 +28,8 @@
   updateSize:
     handler: functions/size/updateSize.main
     memorySize: 128
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: update/size/{id}
@@ -36,6 +42,8 @@
   deleteSize:
     handler: functions/size/deleteSize.main
     memorySize: 128
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: delete/size/{id}
@@ -48,6 +56,8 @@
   getSizes:
     handler: functions/color/getSize.main
     memorySize: 128
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: get/sizes

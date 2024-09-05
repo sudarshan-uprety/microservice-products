@@ -1,6 +1,8 @@
   registerUser:
     handler: functions/users/registerUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: register/user
@@ -12,6 +14,8 @@
   loginVendor:
     handler: functions/users/loginUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: vendor/login
@@ -20,6 +24,8 @@
   loginAdmin:
     handler: functions/users/loginUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: admin/login
@@ -28,6 +34,8 @@
   userDetail:
     handler: functions/users/loginUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/detail
@@ -36,6 +44,8 @@
   newAccessToken:
     handler: functions/users/loginUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/new/token
@@ -44,6 +54,8 @@
   logoutUser:
     handler: functions/users/loginUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/logout
@@ -52,6 +64,8 @@
   changePassword:
     handler: functions/users/updateUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/change/password
@@ -60,6 +74,8 @@
   updatePhone:
     handler: functions/users/updateUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/update/phone
@@ -68,6 +84,8 @@
   updateAddress:
     handler: functions/users/updateUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/update/address
@@ -76,6 +94,8 @@
   updateName:
     handler: functions/users/updateUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/update/name
@@ -84,6 +104,8 @@
   forgetPassword:
     handler: functions/users/updateUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/forget/password
@@ -92,6 +114,8 @@
   confirmForgetPassword:
     handler: functions/users/updateUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: user/confirm/forget/password
@@ -100,6 +124,8 @@
   registerAdmin:
     handler: functions/users/registerUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: register/admin
@@ -111,6 +137,8 @@
   adminDetail:
     handler: functions/users/loginUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: admin/detail
@@ -119,6 +147,8 @@
   updateSuperUserStatus:
     handler: functions/users/updateUser.main
     memorySize: 128
+    layers:
+        - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: admin/update/superuser/status

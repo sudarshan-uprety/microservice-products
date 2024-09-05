@@ -1,6 +1,8 @@
   createColor:
     handler: functions/color/createColor.main
-    memorySize: 128
+    memorySize: 256
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: create/color
@@ -12,7 +14,9 @@
 
   updateColor:
     handler: functions/color/updateColor.main
-    memorySize: 128
+    memorySize: 256
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: update/color/{id}
@@ -24,7 +28,9 @@
 
   deleteColor:
     handler: functions/color/deleteColor.main
-    memorySize: 128
+    memorySize: 256
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: delete/color/{id}
@@ -36,7 +42,9 @@
 
   getColor:
     handler: functions/color/getColor.main
-    memorySize: 128
+    memorySize: 256
+    layers:
+      - ${env:DEPENDENCY_LAYER}
     events:
       - http:
           path: get/colors
