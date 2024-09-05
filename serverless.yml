@@ -45,6 +45,20 @@ provider:
   memorySize: 256
   logRetentionInDays: 3
 
+resources:
+  Resources:
+    DeploymentBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.deploymentBucket.name}
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        Tags:
+          - Key: Name
+            Value: ${self:custom.deploymentBucket.name}
+
 package:
   individually: false
   patterns:

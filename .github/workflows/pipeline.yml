@@ -82,16 +82,6 @@ jobs:
             exit 1
           fi
 
-      - name: Print Deployment Bucket Name
-        run: |
-          # Install jq for JSON processing
-          sudo apt-get install -y jq
-
-          # Extract the deployment bucket name from the serverless configuration
-          deployment_bucket=$(serverless info --verbose | grep 'Deployment bucket' | awk '{print $3}')
-          echo "Deployment bucket name: $deployment_bucket"
-
-
       - name: Run Serverless Doctor
         run: serverless doctor
 
