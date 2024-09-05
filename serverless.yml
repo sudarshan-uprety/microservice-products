@@ -12,13 +12,15 @@ custom:
     region: ap-south-1
     lambdaPort: 3002
   pythonRequirements:
+    dockerizePip: true
+    zip: true
     slim: true
     strip: true
-    layer:
-      name: ${self:custom.service}-${self:custom.stage}
-      description: Python requirements lambda layer
-      compatibleRuntimes:
-        - python3.10
+#    layer:
+#      name: ${self:custom.service}-${self:custom.stage}
+#      description: Python requirements lambda layer
+#      compatibleRuntimes:
+#        - python3.10
     noDeploy:
       - pytest
       - boto3
