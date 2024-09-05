@@ -58,7 +58,7 @@ package:
     - '!package*.json'
     - '.env'
     - 'functions/**/*.py'
-  excludeDevDependencies: true
+  excludeDevDependencies: false
 
 plugins:
   - serverless-dotenv-plugin
