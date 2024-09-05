@@ -23,19 +23,24 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Install Python 3.8
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get install -y software-properties-common
+          sudo apt-get update
+          sudo apt-get install -y python3.8 python3-pip python3-setuptools jq
+          pip3 install --upgrade pip
+          pip3 --no-cache-dir install --upgrade awscli
+
+      - name: Display available Python version
+        run: python3.8 --version
+
       - name: Install pip for Python 3.8
         run: |
           sudo apt-get install -y python3.8-distutils
           curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
           sudo python3.8 get-pip.py
           sudo ln -s /usr/bin/python3.8 /usr/local/bin/python
-
-      - name: Install Python 3.10
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3.10 python3-pip python3-setuptools jq
-          python3.10 -m pip install --upgrade pip
-          sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python
 
       - name: Cache Python Dependencies
         uses: actions/cache@v2
@@ -55,13 +60,14 @@ jobs:
       - name: Install Serverless Framework
         run: |
           npm install -g serverless@latest
+          npm install -g serverless-python-requirements@latest
 
       - name: Install Serverless Plugins
         run: |
-          serverless plugin install --name serverless-python-requirements
-          serverless plugin install --name serverless-dotenv-plugin
-          serverless plugin install --name serverless-prune-plugin
-          serverless plugin install --name serverless-deployment-bucket
+          plugins=("serverless-deployment-bucket" "serverless-python-requirements" "serverless-dotenv-plugin" "serverless-prune-plugin")
+          for plugin in "${plugins[@]}"; do
+            sls plugin install --name $plugin
+          done
 
       - name: Create .env file from GitHub secret
         run: |
@@ -87,12 +93,12 @@ jobs:
               export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
               serverless deploy --stage dev
             elif [ "${{ github.ref }}" == "refs/heads/uat" ]; then
-              export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_UAT }}
-              export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_UAT }}
+              export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+              export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
               serverless deploy --stage uat
             elif [ "${{ github.ref }}" == "refs/heads/prod" ]; then
-              export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
-              export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+              export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+              export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
               serverless deploy --stage prod
             else
               echo "Skipping deployment for branch: ${{ github.ref }}"
@@ -100,3 +106,4 @@ jobs:
           else
             echo "Skipping deployment for event: ${{ github.event_name }}"
           fi
+          # Print AWS credentials for verification
