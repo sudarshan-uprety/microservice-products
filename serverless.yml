@@ -18,7 +18,6 @@ custom:
       compatibleRuntimes:
         - python3.10
     slim: true
-    zip: true
     useStaticCache: true
     useDownloadCache: true
   prune:
@@ -42,7 +41,7 @@ provider:
   logRetentionInDays: 3
 
 package:
-  individually: true
+  individually: false
   patterns:
     - '!node_modules/**'
     - '!venv/**'
