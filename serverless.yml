@@ -28,6 +28,10 @@ custom:
   prune:
     automatic: true
     number: 1
+  deploymentBucket:
+    name: ${self:custom.service}-deploy-${self:custom.stage}
+    region: ap-south-1
+    serverSideEncryption: AES256
 
 provider:
   name: aws
@@ -41,7 +45,7 @@ provider:
   timeout: 30
   memorySize: 256
   logRetentionInDays: 3
-  deploymentBucket: ${self:custom.deploymentBucket}
+  deploymentBucket: ${self:custom.deploymentBucket.name}
 
 package:
   individually: false
