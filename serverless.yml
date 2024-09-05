@@ -12,8 +12,6 @@ custom:
     region: ap-south-1
     lambdaPort: 3002
   pythonRequirements:
-    dockerizePip: true
-    zip: true
     slim: true
     strip: true
 #    layer:
