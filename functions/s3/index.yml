@@ -1,6 +1,8 @@
   generatePUTPresignURL:
     handler: functions/s3/s3.main
-    memorySize: 128
+    memorySize: 256
+    layers:
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: generate/put
@@ -12,7 +14,9 @@
 
   generateDELETEPresignURL:
     handler: functions/s3/s3.main
-    memorySize: 128
+    memorySize: 256
+    layers:
+      - !Ref PythonRequirementsLambdaLayer
     events:
       - http:
           path: generate/delete

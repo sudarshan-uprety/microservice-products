@@ -37,7 +37,8 @@ def presigned_put_url():
         ClientMethod='put_object',
         Params={
             'Bucket': variables.S3Bucket,
-            'Key': object_name
+            'Key': object_name,
+            'ContentType': 'image/jpeg'
         },
         ExpiresIn=variables.S3Expiration
     )

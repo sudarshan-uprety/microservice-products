@@ -3,7 +3,7 @@ from mongoengine import StringField, BooleanField, EmailField
 
 
 class Admin(CommonDocument):
-    id = StringField(primary_key=True)
+    id_sub = StringField(unique=True)
     name = StringField()
     username = StringField(unique=True)
     address = StringField()
@@ -21,6 +21,7 @@ class Admin(CommonDocument):
     def to_dict(self):
         return {
             "id": self.id,
+            "id_sub": self.id_sub,
             "name": self.name,
             "username": self.username,
             "address": self.address,
