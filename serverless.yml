@@ -28,9 +28,6 @@ custom:
   prune:
     automatic: true
     number: 1
-  deploymentBucket:
-    name: ${self:custom.service}-deploy-${self:custom.stage}
-    serverSideEncryption: AES256
 
 provider:
   name: aws
