@@ -41,7 +41,7 @@ provider:
   logRetentionInDays: 3
 
 package:
-  individually: false
+  individually: true
   patterns:
     - '!node_modules/**'
     - '!venv/**'
@@ -49,10 +49,7 @@ package:
     - '!.git/**'
     - '!tests/**'
     - '!*.md'
-    - 'requirements.txt'
     - '!package*.json'
-    - '.env'
-    - 'functions/**/*.py'
   excludeDevDependencies: false
 
 plugins:
@@ -60,6 +57,7 @@ plugins:
   - serverless-offline
   - serverless-python-requirements
   - serverless-prune-plugin
+  - serverless-deployment-bucket
 
 functions:
   - ${file(functions/product/index.yml)}
