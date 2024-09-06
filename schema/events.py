@@ -11,7 +11,7 @@ class ProductsDetails(BaseModel):
 
 
 class Event(BaseModel):
-    operation: str
+    event_name: str
     products: List[ProductsDetails]
 
     @field_validator('products')

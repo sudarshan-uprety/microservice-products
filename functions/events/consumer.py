@@ -5,7 +5,7 @@ from schema.events import Event
 from utils.database import db_config
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
-from utils import constant, helpers
+from utils import constant, helpers, variables
 from utils.lambda_middleware import lambda_middleware
 
 
@@ -34,9 +34,9 @@ def event_handler(event: LambdaContext, context: LambdaContext):
     db_config()
     data = Event(**input_data)
 
-    if data.operation == "decrease":
+    if data.event_name == variables.DECREASE_PRODUCT_QUANTITY_EVENT:
         response = product_decrease_handler(data=data)
-    elif data.operation == "increase":
+    elif data.event_name == variables.INCREASE_PRODUCT_QUANTITY_EVENT:
         response = product_increase_handler(product=product, quantity=quantity)
     else:
         return respond_error(
