@@ -49,17 +49,14 @@ def lambda_middleware(handler):
                 logger.debug("Failed to parse body as JSON")
                 body = {}
 
-        # Handle cases where body might be None
         if body is None:
             body = {}
 
-        # Try to get trace_id from the body, default to None if not found
         trace_id = body.get('trace_id')
 
         # If trace_id is not found in the body, generate a new one
         if not trace_id:
             trace_id = str(uuid.uuid4())
-            logger.debug(f"Generated new trace ID: {trace_id}")
 
         start_time = time.time()
         client_ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'Unknown')
@@ -71,10 +68,9 @@ def lambda_middleware(handler):
             try:
                 request_payload = json.loads(request_payload)
             except json.JSONDecodeError:
-                pass  # Keep it as a string if it's not JSON
+                pass
 
         try:
-            # Call the actual handler
             response = handler(event, context)
             process_time = time.time() - start_time
 
@@ -103,7 +99,6 @@ def lambda_middleware(handler):
                 "url": event.get('path'),
                 "method": event.get('httpMethod'),
                 "process_time": f"{process_time:.4f}",
-                # "trace_id": trace_id,
                 "client_ip": client_ip,
                 "request_payload": request_payload,
             })
