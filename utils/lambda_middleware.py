@@ -2,24 +2,17 @@ import json
 import time
 import uuid
 from functools import wraps
-from copy import deepcopy
+from typing import Dict, Any
 
-from utils.log import logger, trace_id_var
+from utils.log import logger
 
-# List of sensitive fields to redact
-SENSITIVE_FIELDS = [
+SENSITIVE_FIELDS = frozenset([
     "password", "confirm_password", "new_password", "current_password",
     "access_token", "refresh_token", "id_token"
-]
+])
 
 
-def sanitize_payload(payload):
-    if isinstance(payload, str):
-        try:
-            payload = json.loads(payload)
-        except json.JSONDecodeError:
-            return payload
-
+def sanitize_payload(payload: Any) -> Any:
     if isinstance(payload, dict):
         sanitized = {}
         for key, value in payload.items():
@@ -38,77 +31,55 @@ def sanitize_payload(payload):
 
 def lambda_middleware(handler):
     @wraps(handler)
-    def wrapper(event, context):
-        body = event.get('body', {})
+    def wrapper(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+        start_time = time.time()
 
-        # If body is a string, try to parse it as JSON
+        # Extract and sanitize relevant information
+        body = event.get('body', {})
         if isinstance(body, str):
             try:
                 body = json.loads(body)
             except json.JSONDecodeError:
-                logger.debug("Failed to parse body as JSON")
                 body = {}
 
-        # Handle cases where body might be None
-        if body is None:
-            body = {}
-
-        # Try to get trace_id from the body, default to None if not found
-        trace_id = body.get('trace_id')
-
-        # If trace_id is not found in the body, generate a new one
-        if not trace_id:
-            trace_id = str(uuid.uuid4())
-            logger.debug(f"Generated new trace ID: {trace_id}")
-
-        start_time = time.time()
+        trace_id = body.get('trace_id') or str(uuid.uuid4())
         client_ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'Unknown')
 
-        # Sanitize and prepare the request payload
-        sanitized_event = sanitize_payload(deepcopy(event)) or {}
-        request_payload = sanitized_event.get('body')
-        if request_payload:
-            try:
-                request_payload = json.loads(request_payload)
-            except json.JSONDecodeError:
-                pass  # Keep it as a string if it's not JSON
+        sanitized_payload = sanitize_payload(body)
+
+        log_dict = {
+            "url": event.get('path'),
+            "method": event.get('httpMethod'),
+            "trace_id": trace_id,
+            "client_ip": client_ip,
+            "request_payload": sanitized_payload
+        }
 
         try:
-            # Call the actual handler
             response = handler(event, context)
             process_time = time.time() - start_time
+            status_code = response.get('statusCode', 200)
 
-            log_dict = {
-                "url": event.get('path'),
-                "method": event.get('httpMethod'),
+            log_dict.update({
                 "process_time": f"{process_time:.4f}",
-                "status_code": response.get('statusCode'),
-                "trace_id": trace_id,
-                "client_ip": client_ip,
-                "request_payload": sanitize_payload(request_payload)
-            }
+                "status_code": status_code
+            })
 
             log_message = json.dumps(log_dict)
 
-            if response.get('statusCode', 200) >= 500:
+            if status_code >= 500:
                 logger.error(f"Request failed: {log_message}")
-            elif response.get('statusCode', 200) >= 400:
+            elif status_code >= 400:
                 logger.warning(f"Request resulted in client error: {log_message}")
             else:
                 logger.info(f"Request completed successfully: {log_message}")
 
+            return response
+
         except Exception as e:
             process_time = time.time() - start_time
-            logger.exception(f"Request failed with exception: {str(e)}", extra={
-                "url": event.get('path'),
-                "method": event.get('httpMethod'),
-                "process_time": f"{process_time:.4f}",
-                # "trace_id": trace_id,
-                "client_ip": client_ip,
-                "request_payload": request_payload,
-            })
+            log_dict["process_time"] = f"{process_time:.4f}"
+            logger.exception(f"Request failed with exception: {str(e)}", extra=log_dict)
             raise
-
-        return response
 
     return wrapper
