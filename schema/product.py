@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, List, Union
 
 from pydantic import BaseModel, Field, field_validator, model_validator, root_validator
 
@@ -14,12 +14,12 @@ class ProductCreate(BaseModel):
     name: str
     price: float
     description: str
-    image: str
+    image: List[str]
     category: str
     stock: int
     status: bool
-    size: Optional[str] = Field(default=None)
-    color: Optional[str] = Field(default=None)
+    size: Optional[Union[str, List[str]]] = Field(default=None)
+    color: Optional[Union[str, List[str]]] = Field(default=None)
     vendor: str
     type: str
 
@@ -30,12 +30,12 @@ class ProductCreate(BaseModel):
 
     @field_validator('size')
     def validate_size(cls, value):
-        size = Size.objects.get(id=value)
+        size = Size.objects.filter(id__in=value)
         return size
 
     @field_validator('color')
     def validate_color(cls, value):
-        color = Color.objects.get(id=value)
+        color = Color.objects.filter(id__in=value)
         return color
 
     @field_validator('type')
@@ -97,11 +97,11 @@ class ProductCreateUpdateResponse(BaseModel):
     name: str
     price: float
     description: str
-    image: str
+    image: List[str]
     category: dict
     status: bool
-    size: dict | None
-    color: dict | None
+    size: Optional[List[dict]] = None
+    color: Optional[List[dict]] = None
     type: dict | None
 
 
