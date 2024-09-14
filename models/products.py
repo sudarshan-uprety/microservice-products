@@ -1,4 +1,4 @@
-from mongoengine import StringField, FloatField, BooleanField, IntField, ReferenceField
+from mongoengine import StringField, FloatField, BooleanField, IntField, ReferenceField, ListField
 
 from models import category, size, color, type, vendors
 from models.base import CommonDocument
@@ -9,12 +9,12 @@ class Products(CommonDocument):
     name = StringField()
     price = FloatField()
     description = StringField()
-    image = StringField()
+    image = ListField(StringField())
     category = ReferenceField(category.Category)
     stock = IntField()
     status = BooleanField(default=True)
-    size = ReferenceField(size.Size, required=False, null=True)
-    color = ReferenceField(color.Color, required=False, null=True)
+    size = ListField(ReferenceField(size.Size, required=False, null=True))
+    color = ListField(ReferenceField(color.Color, required=False, null=True))
     type = ReferenceField(type.Type)
     vendor = ReferenceField(vendors.Vendors, required=True, null=False)
 
