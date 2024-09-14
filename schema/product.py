@@ -9,6 +9,22 @@ from models.type import Type
 from models.vendors import Vendors
 
 
+class VariantCreate(BaseModel):
+    size: Optional[str] = None
+    color: Optional[str] = None
+    stock: int
+
+    @field_validator('size')
+    def validate_size(cls, value):
+        size = Size.objects.get(id=value)
+        return size
+
+    @field_validator('color')
+    def validate_color(cls, value):
+        color = Color.objects.get(id=value)
+        return color
+
+
 class ProductCreate(BaseModel):
     """schema for product model"""
     name: str
@@ -16,27 +32,15 @@ class ProductCreate(BaseModel):
     description: str
     image: List[str]
     category: str
-    stock: int
     status: bool
-    size: Optional[Union[str, List[str]]] = Field(default=None)
-    color: Optional[Union[str, List[str]]] = Field(default=None)
     vendor: str
     type: str
+    variants: List[VariantCreate]
 
     @field_validator('category')
     def validate_category(cls, value):
         category = Category.objects.get(id=value)
         return category
-
-    @field_validator('size')
-    def validate_size(cls, value):
-        size = Size.objects.filter(id__in=value)
-        return size
-
-    @field_validator('color')
-    def validate_color(cls, value):
-        color = Color.objects.filter(id__in=value)
-        return color
 
     @field_validator('type')
     def validate_type(cls, value):
