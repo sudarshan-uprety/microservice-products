@@ -53,6 +53,12 @@ class ProductCreate(BaseModel):
         return vendor
 
 
+class VariantResponse(BaseModel):
+    size: Optional[dict] = None
+    color: Optional[dict] = None
+    stock: int
+
+
 class ProductUpdate(BaseModel):
     """schema for update product model"""
     name: Optional[str] = None
@@ -107,6 +113,7 @@ class ProductCreateUpdateResponse(BaseModel):
     size: Optional[List[dict]] = None
     color: Optional[List[dict]] = None
     type: dict | None
+    variants: List[VariantResponse]
 
 
 class GetProductResponse(BaseModel):

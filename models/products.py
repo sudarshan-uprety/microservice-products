@@ -1,10 +1,10 @@
-from mongoengine import StringField, FloatField, BooleanField, IntField, ReferenceField, ListField, EmbeddedDocumentListField
+from mongoengine import StringField, FloatField, BooleanField, IntField, ReferenceField, ListField, EmbeddedDocument, EmbeddedDocumentListField
 
 from models import category, size, color, type, vendors
 from models.base import CommonDocument
 
 
-class ProductVariant(CommonDocument):
+class ProductVariant(EmbeddedDocument):
     size = ReferenceField(size.Size, required=False, null=True)
     color = ReferenceField(color.Color, required=False, null=True)
     stock = IntField(default=0)
@@ -12,8 +12,8 @@ class ProductVariant(CommonDocument):
     def to_dict(self):
         return {
             "id": str(self.id),
-            "size": str(self.size.id) if self.size else None,
-            "color": str(self.color.id) if self.color else None,
+            "size": self.size.to_dict() if self.size else None,
+            "color": self.color.to_dict() if self.color else None,
             "stock": self.stock
         }
 
@@ -28,7 +28,7 @@ class Products(CommonDocument):
     status = BooleanField(default=True)
     type = ReferenceField(type.Type)
     vendor = ReferenceField(vendors.Vendors, required=True)
-    variants = ListField(ReferenceField(ProductVariant))
+    variants = EmbeddedDocumentListField(ProductVariant)
 
     meta = {"collection": "products"}
 

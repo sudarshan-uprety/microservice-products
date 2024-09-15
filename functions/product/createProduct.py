@@ -50,9 +50,8 @@ def create_product(event: LambdaContext, context: LambdaContext, **kwargs):
         price=product.price,
         category=product.category.to_dict(),
         status=product.status,
-        size=[size.to_dict() for size in product.size] if product.size else None,
-        color=[color.to_dict() for color in product.color] if product.color else None,
         type=product.type.to_dict(),
+        variants=product.variants,
     )
 
     # Return success response
