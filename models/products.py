@@ -11,7 +11,6 @@ class ProductVariant(EmbeddedDocument):
 
     def to_dict(self):
         return {
-            "id": str(self.id),
             "size": self.size.to_dict() if self.size else None,
             "color": self.color.to_dict() if self.color else None,
             "stock": self.stock

@@ -110,10 +110,8 @@ class ProductCreateUpdateResponse(BaseModel):
     image: List[str]
     category: dict
     status: bool
-    size: Optional[List[dict]] = None
-    color: Optional[List[dict]] = None
     type: dict | None
-    variants: List[VariantResponse]
+    variants: List[dict]
 
 
 class GetProductResponse(BaseModel):
