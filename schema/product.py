@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, List, Union
 
 from pydantic import BaseModel, Field, field_validator, model_validator, root_validator
 
@@ -7,26 +7,13 @@ from models.color import Color
 from models.size import Size
 from models.type import Type
 from models.vendors import Vendors
+from models.products import ProductVariant
 
 
-class ProductCreate(BaseModel):
-    """schema for product model"""
-    name: str
-    price: float
-    description: str
-    image: str
-    category: str
+class VariantCreate(BaseModel):
+    size: Optional[str] = None
+    color: Optional[str] = None
     stock: int
-    status: bool
-    size: Optional[str] = Field(default=None)
-    color: Optional[str] = Field(default=None)
-    vendor: str
-    type: str
-
-    @field_validator('category')
-    def validate_category(cls, value):
-        category = Category.objects.get(id=value)
-        return category
 
     @field_validator('size')
     def validate_size(cls, value):
@@ -37,6 +24,24 @@ class ProductCreate(BaseModel):
     def validate_color(cls, value):
         color = Color.objects.get(id=value)
         return color
+
+
+class ProductCreate(BaseModel):
+    """schema for product model"""
+    name: str
+    price: float
+    description: str
+    image: List[str]
+    category: str
+    status: bool
+    vendor: str
+    type: str
+    variants: List[VariantCreate]
+
+    @field_validator('category')
+    def validate_category(cls, value):
+        category = Category.objects.get(id=value)
+        return category
 
     @field_validator('type')
     def validate_type(cls, value):
@@ -49,34 +54,28 @@ class ProductCreate(BaseModel):
         return vendor
 
 
+class VariantResponse(BaseModel):
+    size: Optional[dict] = None
+    color: Optional[dict] = None
+    stock: int
+
+
 class ProductUpdate(BaseModel):
     """schema for update product model"""
     name: Optional[str] = None
     price: Optional[float] = None
     description: Optional[str] = None
-    image: Optional[str] = None
+    image: Optional[List[str]] = None
     category: Optional[str] = None
-    stock: Optional[int] = None
     status: Optional[bool] = None
-    size: Optional[str] = None
-    color: Optional[str] = None
     vendor: Optional[str] = None
     type: Optional[str] = None
+    variants: Optional[List[VariantCreate]] = None
 
     @field_validator('category')
     def validate_category(cls, value):
         category = Category.objects.get(id=value)
         return category
-
-    @field_validator('size')
-    def validate_size(cls, value):
-        size = Size.objects.get(id=value)
-        return size
-
-    @field_validator('color')
-    def validate_color(cls, value):
-        color = Color.objects.get(id=value)
-        return color
 
     @field_validator('type')
     def validate_type(cls, value):
@@ -97,12 +96,11 @@ class ProductCreateUpdateResponse(BaseModel):
     name: str
     price: float
     description: str
-    image: str
+    image: List[str]
     category: dict
     status: bool
-    size: dict | None
-    color: dict | None
     type: dict | None
+    variants: List[VariantResponse]
 
 
 class GetProductResponse(BaseModel):
