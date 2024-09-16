@@ -51,7 +51,7 @@ def create_product(event: LambdaContext, context: LambdaContext, **kwargs):
         category=product.category.to_dict(),
         status=product.status,
         type=product.type.to_dict(),
-        variants=product.variants,
+        variants=[data.to_dict() for data in product.variants],
     )
 
     # Return success response

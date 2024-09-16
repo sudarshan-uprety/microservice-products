@@ -1,4 +1,5 @@
-from mongoengine import StringField, FloatField, BooleanField, IntField, ReferenceField, ListField, EmbeddedDocument, EmbeddedDocumentListField
+from mongoengine import (StringField, FloatField, BooleanField, IntField,
+                         ReferenceField, ListField, EmbeddedDocument, EmbeddedDocumentListField)
 
 from models import category, size, color, type, vendors
 from models.base import CommonDocument

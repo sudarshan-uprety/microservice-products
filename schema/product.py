@@ -64,29 +64,17 @@ class ProductUpdate(BaseModel):
     name: Optional[str] = None
     price: Optional[float] = None
     description: Optional[str] = None
-    image: Optional[str] = None
+    image: Optional[List[str]] = None
     category: Optional[str] = None
-    stock: Optional[int] = None
     status: Optional[bool] = None
-    size: Optional[str] = None
-    color: Optional[str] = None
     vendor: Optional[str] = None
     type: Optional[str] = None
+    variants: Optional[List[VariantCreate]] = None
 
     @field_validator('category')
     def validate_category(cls, value):
         category = Category.objects.get(id=value)
         return category
-
-    @field_validator('size')
-    def validate_size(cls, value):
-        size = Size.objects.get(id=value)
-        return size
-
-    @field_validator('color')
-    def validate_color(cls, value):
-        color = Color.objects.get(id=value)
-        return color
 
     @field_validator('type')
     def validate_type(cls, value):
@@ -111,7 +99,7 @@ class ProductCreateUpdateResponse(BaseModel):
     category: dict
     status: bool
     type: dict | None
-    variants: List[dict]
+    variants: List[VariantResponse]
 
 
 class GetProductResponse(BaseModel):
