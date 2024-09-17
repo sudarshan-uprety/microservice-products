@@ -109,14 +109,12 @@ class GetProductResponse(BaseModel):
     name: str
     price: float
     description: str
-    image: str
+    image: List[str]
     category: Optional[Dict]
-    stock: int
     status: bool
-    size: Optional[Dict] = Field(default=None)
-    color: Optional[Dict] = Field(default=None)
     vendor: Optional[Dict]
     type: Optional[Dict]
+    variants: List[VariantResponse]
 
     @model_validator(mode='before')
     def validate_references(cls, values):
