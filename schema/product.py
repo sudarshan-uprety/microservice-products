@@ -7,7 +7,6 @@ from models.color import Color
 from models.size import Size
 from models.type import Type
 from models.vendors import Vendors
-from models.products import ProductVariant
 
 
 class VariantCreate(BaseModel):
