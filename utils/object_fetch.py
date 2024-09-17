@@ -1,6 +1,6 @@
 from mongoengine import QuerySet
 
-from schema.product import GetProductResponse
+from schema.product import GetProductResponse, VariantResponse
 from schema.type import GetTypeResponse
 from schema.color import GetColorResponse
 from schema.category import GetCategoryResponse
@@ -18,12 +18,10 @@ def fetch_all_products(products):
             description=product.description,
             image=product.image,
             category=product.category.id if product.category else None,
-            stock=product.stock,
             status=product.status,
-            size=product.size.id if product.size else None,
-            color=product.color.id if product.color else None,
             type=product.type.id if product.type else None,
-            vendor=product.vendor.id if product.vendor else None
+            vendor=product.vendor.id if product.vendor else None,
+            variants=[variant.to_dict() for variant in product.variants] if product.variants else []
         ).dict()
         for product in products
     ]
@@ -39,12 +37,11 @@ def fetch_product(product):
         description=product.description,
         image=product.image,
         category=product.category.id if product.category else None,
-        stock=product.stock,
         status=product.status,
-        size=product.size.id if product.size else None,
-        color=product.color.id if product.color else None,
         type=product.type.id if product.type else None,
-        vendor=product.vendor.id if product.vendor else None
+        vendor=product.vendor.id if product.vendor else None,
+        variants=[variant.to_dict() for variant in product.variants] if product.variants else []
+
     ).dict()
     return product
 
