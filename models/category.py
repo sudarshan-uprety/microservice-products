@@ -20,7 +20,5 @@ class Category(CommonDocument):
         return {
             "id": str(self.id),
             "name": self.name,
-            "description": self.description,
-            # "created_by": str(self.created_by.id) if self.created_by else None,
-            "status": self.status
+            "description": self.description
         }

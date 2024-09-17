@@ -20,7 +20,5 @@ class Color(CommonDocument):
         return {
             "id": str(self.id),
             "name": self.name,
-            "hex": self.hex,
-            # "created_by": str(self.created_by.id) if self.created_by else None,
-            "status": self.status,
+            "hex": self.hex
         }
