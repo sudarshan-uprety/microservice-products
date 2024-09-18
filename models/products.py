@@ -6,14 +6,14 @@ from models.base import CommonDocument
 
 
 class ProductVariant(EmbeddedDocument):
-    size = ReferenceField(size.Size, required=False, null=True)
-    color = ReferenceField(color.Color, required=False, null=True)
+    size = StringField(required=False)
+    color = StringField(required=False)
     stock = IntField(default=0)
 
     def to_dict(self):
         return {
-            "size": self.size.to_dict() if self.size else None,
-            "color": self.color.to_dict() if self.color else None,
+            "size": self.size,
+            "color": self.color,
             "stock": self.stock
         }
 
@@ -29,6 +29,7 @@ class Products(CommonDocument):
     type = ReferenceField(type.Type)
     vendor = ReferenceField(vendors.Vendors, required=True)
     variants = EmbeddedDocumentListField(ProductVariant)
+    total_stock = IntField(default=0)
 
     meta = {"collection": "products"}
 
@@ -46,8 +47,13 @@ class Products(CommonDocument):
             "status": self.status,
             "type": str(self.type.id) if self.type else None,
             "vendor": str(self.vendor.id) if self.vendor else None,
-            "variants": [variant.to_dict() for variant in self.variants]
+            "variants": [variant.to_dict() for variant in self.variants],
         }
 
-    def total_stock(self):
-        return sum(variant.stock for variant in self.variants)
+    def calculate_total_stock(self):
+        self.total_stock = sum(variant.stock for variant in self.variants)
+
+    def save(self, *args, **kwargs):
+        self.calculate_total_stock()
+        print(self.total_stock)
+        super(Products, self).save(*args, **kwargs)

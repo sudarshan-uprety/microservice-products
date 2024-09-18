@@ -14,15 +14,9 @@ class VariantCreate(BaseModel):
     color: Optional[str] = None
     stock: int
 
-    @field_validator('size')
-    def validate_size(cls, value):
-        size = Size.objects.get(id=value)
-        return size
-
-    @field_validator('color')
-    def validate_color(cls, value):
-        color = Color.objects.get(id=value)
-        return color
+    @property
+    def total_stock(self):
+        return self.stock
 
 
 class ProductCreate(BaseModel):
@@ -36,6 +30,10 @@ class ProductCreate(BaseModel):
     vendor: str
     type: str
     variants: List[VariantCreate]
+
+    @property
+    def total_stock(self) -> int:
+        return sum(variant.stock for variant in self.variants)
 
     @field_validator('category')
     def validate_category(cls, value):
@@ -99,7 +97,8 @@ class ProductCreateUpdateResponse(BaseModel):
     category: dict
     status: bool
     type: dict | None
-    variants: List[VariantResponse]
+    total_stock: int
+    variants: List[dict]
 
 
 class GetProductResponse(BaseModel):
@@ -113,7 +112,8 @@ class GetProductResponse(BaseModel):
     status: bool
     vendor: Optional[Dict]
     type: Optional[Dict]
-    variants: List[VariantResponse]
+    total_stock: int
+    variants: List[dict]
 
     @model_validator(mode='before')
     def validate_references(cls, values):
@@ -125,8 +125,6 @@ class GetProductResponse(BaseModel):
             return None
 
         values['category'] = get_reference_dict(values.get('category'), Category, ['id', 'name', 'description'])
-        values['size'] = get_reference_dict(values.get('size'), Size, ['id', 'name', 'description'])
-        values['color'] = get_reference_dict(values.get('color'), Color, ['id', 'hex'])
         values['type'] = get_reference_dict(values.get('type'), Type, ['id', 'name', 'description'])
         values['vendor'] = get_reference_dict(values.get('vendor'), Vendors, ['id', 'store_name'])
 

@@ -21,7 +21,8 @@ def fetch_all_products(products):
             status=product.status,
             type=product.type.id if product.type else None,
             vendor=product.vendor.id if product.vendor else None,
-            variants=[variant.to_dict() for variant in product.variants] if product.variants else []
+            variants=[variant.to_dict() for variant in product.variants] if product.variants else [],
+            total_stock=product.total_stock
         ).dict()
         for product in products
     ]
@@ -40,7 +41,8 @@ def fetch_product(product):
         status=product.status,
         type=product.type.id if product.type else None,
         vendor=product.vendor.id if product.vendor else None,
-        variants=[variant.to_dict() for variant in product.variants] if product.variants else []
+        variants=[variant.to_dict() for variant in product.variants] if product.variants else [],
+        total_stock = product.total_stock
 
     ).dict()
     return product
