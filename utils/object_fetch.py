@@ -42,7 +42,7 @@ def fetch_product(product):
         type=product.type.id if product.type else None,
         vendor=product.vendor.id if product.vendor else None,
         variants=[variant.to_dict() for variant in product.variants] if product.variants else [],
-        total_stock = product.total_stock
+        total_stock=product.total_stock
 
     ).dict()
     return product

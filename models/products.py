@@ -55,5 +55,4 @@ class Products(CommonDocument):
 
     def save(self, *args, **kwargs):
         self.calculate_total_stock()
-        print(self.total_stock)
         super(Products, self).save(*args, **kwargs)
