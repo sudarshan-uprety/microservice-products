@@ -2,7 +2,7 @@ import json
 
 from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
-from models.products import Products
+from models.products import Products, ProductVariant
 from schema.product import ProductCreateUpdateResponse, ProductUpdate
 from utils.response import respond_success
 from utils.exception_decorator import error_handler
@@ -34,7 +34,8 @@ def update_product(event: LambdaContext, context: LambdaContext, **kwargs):
     product_data = ProductUpdate(**input_data)
 
     for key, value in product_data.dict(exclude_none=True).items():
-        setattr(product, key, value)
+        setattr(product, key, [ProductVariant(**variant) if isinstance(variant, dict)
+                else variant for variant in value] if key == 'variants' and value else value)
     product.save()
 
     response_data = ProductCreateUpdateResponse(
@@ -47,6 +48,7 @@ def update_product(event: LambdaContext, context: LambdaContext, **kwargs):
         status=product.status,
         type=product.type.to_dict(),
         variants=[data.to_dict() for data in product.variants],
+        total_stock=product.total_stock
     )
 
     return respond_success(
