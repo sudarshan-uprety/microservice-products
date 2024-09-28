@@ -23,7 +23,7 @@ custom:
       # "normal" exclusions:
       - '**/tests/*'
       # default dist-info with !(lib_name*) - matches only if name is not present:
-      - "**/!(lib_name*)*.dist-info/*"
+      - "**/!(email_validator*)*.dist-info/*"
       # the rest of defaults:
       - '**/*.py[c|o]'
       -  '**/__pycache__*'
