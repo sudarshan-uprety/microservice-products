@@ -18,17 +18,8 @@ custom:
       compatibleRuntimes:
         - python3.10
     slim: true
-    slimPatternsAppendDefaults: false # we need to overwrite default dist-info
-    slimPatterns:
-      # "normal" exclusions:
-      - '**/tests/*'
-      # default dist-info with !(lib_name*) - matches only if name is not present:
-      - "**/!(email_validator*)*.dist-info/*"
-      # the rest of defaults:
-      - '**/*.py[c|o]'
-      -  '**/__pycache__*'
-    useStaticCache: false
-    useDownloadCache: false
+    useStaticCache: true
+    useDownloadCache: true
   prune:
     automatic: true
     number: 1

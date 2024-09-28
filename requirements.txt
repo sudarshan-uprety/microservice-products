@@ -7,7 +7,7 @@ colorama==0.4.6
 dateutils==0.6.12
 dnspython==2.6.1
 docutils==0.16
-email_validator==2.2.0
+email_validator==2.1.1
 environ==1.0
 idna==3.7
 jmespath==1.0.1
