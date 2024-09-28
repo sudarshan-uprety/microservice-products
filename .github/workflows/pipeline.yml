@@ -48,7 +48,7 @@ jobs:
           path: |
             ~/.cache/pip
             ~/.cache/serverless-python-requirements
-          key: python-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
+          key: python-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             python-${{ runner.os }}-
             python-

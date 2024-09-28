@@ -18,8 +18,9 @@ custom:
       compatibleRuntimes:
         - python3.10
     slim: false
-    useStaticCache: true
-    useDownloadCache: true
+    fileName: requirements.txt
+    useStaticCache: false
+    useDownloadCache: false
   prune:
     automatic: true
     number: 1
