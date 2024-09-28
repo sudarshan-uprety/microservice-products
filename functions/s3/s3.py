@@ -14,7 +14,7 @@ from utils.lambda_middleware import lambda_middleware
 @lambda_middleware
 @vendors_login
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+def main(event: LambdaContext, context: LambdaContext, vendor):
     path = event.get("path")
 
     if path == "/generate/put":
