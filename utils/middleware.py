@@ -14,7 +14,7 @@ def admin_login(func):
     def wrapper(*args, **kwargs):
         try:
             db_config()
-            admin = Admin.objects.get(id=args[0]['requestContext']['authorizer']['claims']['sub'], is_deleted=False)
+            admin = Admin.objects.get(id_sub=args[0]['requestContext']['authorizer']['claims']['sub'], is_deleted=False)
             if not admin.is_active:
                 raise ValueError("Admin is not active")
             kwargs['admin'] = admin

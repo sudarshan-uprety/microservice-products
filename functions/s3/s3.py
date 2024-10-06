@@ -4,6 +4,7 @@ from aws_lambda_powertools.utilities.typing.lambda_context import LambdaContext
 
 from utils.helpers import boto3_s3_client, generate_8digit_uuid
 from utils import variables, constant, helpers
+from utils.middleware import vendors_login
 from utils.exception_decorator import error_handler
 from utils.response import respond_error, respond_success
 from schema.s3 import S3Delete
@@ -11,8 +12,9 @@ from utils.lambda_middleware import lambda_middleware
 
 
 @lambda_middleware
+@vendors_login
 @error_handler
-def main(event: LambdaContext, context: LambdaContext):
+def main(event: LambdaContext, context: LambdaContext, vendor):
     path = event.get("path")
 
     if path == "/generate/put":

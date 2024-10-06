@@ -17,9 +17,10 @@ custom:
       description: Python requirements lambda layer
       compatibleRuntimes:
         - python3.10
-    slim: true
-    useStaticCache: true
-    useDownloadCache: true
+    slim: false
+    fileName: requirements.txt
+    useStaticCache: false
+    useDownloadCache: false
   prune:
     automatic: true
     number: 1

@@ -49,16 +49,21 @@ def event_handler(event: LambdaContext, context: LambdaContext):
 
 
 def product_decrease_handler(data: Event) -> bool:
-    for product in data.products:
-        product_obj = product['product']
-        product_obj.stock -= product['quantity']
-        product_obj.save()
+    for product_info in data.products:
+        product = product_info['product']
+        variant = product_info['variant']
+        quantity = product_info['quantity']
+
+        variant.stock -= quantity
+        product.total_stock -= quantity
+        product.save()
+
     return respond_success(
         status_code=constant.SUCCESS_UPDATED,
         success=True,
         data=None,
         warning=None,
-        message="Product decreased.",
+        message="Product quantities decreased.",
     )
 
 
