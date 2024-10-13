@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, List, Union
 
 from pydantic import BaseModel, Field, field_validator, model_validator, root_validator
 
@@ -9,34 +9,36 @@ from models.type import Type
 from models.vendors import Vendors
 
 
+class VariantCreate(BaseModel):
+    size: Optional[str] = None
+    color: Optional[str] = None
+    stock: int
+
+    @property
+    def total_stock(self):
+        return self.stock
+
+
 class ProductCreate(BaseModel):
     """schema for product model"""
     name: str
     price: float
     description: str
-    image: str
+    image: List[str]
     category: str
-    stock: int
     status: bool
-    size: Optional[str] = Field(default=None)
-    color: Optional[str] = Field(default=None)
     vendor: str
     type: str
+    variants: List[VariantCreate]
+
+    @property
+    def total_stock(self) -> int:
+        return sum(variant.stock for variant in self.variants)
 
     @field_validator('category')
     def validate_category(cls, value):
         category = Category.objects.get(id=value)
         return category
-
-    @field_validator('size')
-    def validate_size(cls, value):
-        size = Size.objects.get(id=value)
-        return size
-
-    @field_validator('color')
-    def validate_color(cls, value):
-        color = Color.objects.get(id=value)
-        return color
 
     @field_validator('type')
     def validate_type(cls, value):
@@ -49,34 +51,28 @@ class ProductCreate(BaseModel):
         return vendor
 
 
+class VariantResponse(BaseModel):
+    size: Optional[dict] = None
+    color: Optional[dict] = None
+    stock: int
+
+
 class ProductUpdate(BaseModel):
     """schema for update product model"""
     name: Optional[str] = None
     price: Optional[float] = None
     description: Optional[str] = None
-    image: Optional[str] = None
+    image: Optional[List[str]] = None
     category: Optional[str] = None
-    stock: Optional[int] = None
     status: Optional[bool] = None
-    size: Optional[str] = None
-    color: Optional[str] = None
     vendor: Optional[str] = None
     type: Optional[str] = None
+    variants: Optional[List[VariantCreate]] = None
 
     @field_validator('category')
     def validate_category(cls, value):
         category = Category.objects.get(id=value)
         return category
-
-    @field_validator('size')
-    def validate_size(cls, value):
-        size = Size.objects.get(id=value)
-        return size
-
-    @field_validator('color')
-    def validate_color(cls, value):
-        color = Color.objects.get(id=value)
-        return color
 
     @field_validator('type')
     def validate_type(cls, value):
@@ -97,12 +93,12 @@ class ProductCreateUpdateResponse(BaseModel):
     name: str
     price: float
     description: str
-    image: str
+    image: List[str]
     category: dict
     status: bool
-    size: dict | None
-    color: dict | None
     type: dict | None
+    total_stock: int
+    variants: List[dict]
 
 
 class GetProductResponse(BaseModel):
@@ -111,14 +107,13 @@ class GetProductResponse(BaseModel):
     name: str
     price: float
     description: str
-    image: str
+    image: List[str]
     category: Optional[Dict]
-    stock: int
     status: bool
-    size: Optional[Dict] = Field(default=None)
-    color: Optional[Dict] = Field(default=None)
     vendor: Optional[Dict]
     type: Optional[Dict]
+    total_stock: int
+    variants: List[dict]
 
     @model_validator(mode='before')
     def validate_references(cls, values):
@@ -130,8 +125,6 @@ class GetProductResponse(BaseModel):
             return None
 
         values['category'] = get_reference_dict(values.get('category'), Category, ['id', 'name', 'description'])
-        values['size'] = get_reference_dict(values.get('size'), Size, ['id', 'name', 'description'])
-        values['color'] = get_reference_dict(values.get('color'), Color, ['id', 'hex'])
         values['type'] = get_reference_dict(values.get('type'), Type, ['id', 'name', 'description'])
         values['vendor'] = get_reference_dict(values.get('vendor'), Vendors, ['id', 'store_name'])
 

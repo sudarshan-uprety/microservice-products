@@ -32,7 +32,7 @@ def create_category(event: LambdaContext, context: LambdaContext, admin: Admin):
     input_data = helpers.load_json(event=event)
 
     # injecting admin to category
-    input_data["created_by"] = admin.id
+    input_data["created_by"] = str(admin.id)
 
     # validation for incoming data.
     category_data = CategoryCreate(**input_data)
