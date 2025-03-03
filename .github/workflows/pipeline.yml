@@ -1,109 +1,109 @@
-name: Deploy Serverless Application
+# name: Deploy Serverless Application
 
-on:
-  push:
-    branches:
-      - dev
-      - uat
-      - prod
+# on:
+#   push:
+#     branches:
+#       - dev
+#       - uat
+#       - prod
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [19.x]
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         node-version: [19.x]
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ matrix.node-version }}
 
-      - name: Install Python 3.8
-        run: |
-          sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt-get install -y software-properties-common
-          sudo apt-get update
-          sudo apt-get install -y python3.8 python3-pip python3-setuptools jq
-          pip3 install --upgrade pip
-          pip3 --no-cache-dir install --upgrade awscli
+#       - name: Install Python 3.8
+#         run: |
+#           sudo add-apt-repository ppa:deadsnakes/ppa
+#           sudo apt-get install -y software-properties-common
+#           sudo apt-get update
+#           sudo apt-get install -y python3.8 python3-pip python3-setuptools jq
+#           pip3 install --upgrade pip
+#           pip3 --no-cache-dir install --upgrade awscli
 
-      - name: Display available Python version
-        run: python3.8 --version
+#       - name: Display available Python version
+#         run: python3.8 --version
 
-      - name: Install pip for Python 3.8
-        run: |
-          sudo apt-get install -y python3.8-distutils
-          curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-          sudo python3.8 get-pip.py
-          sudo ln -s /usr/bin/python3.8 /usr/local/bin/python
+#       - name: Install pip for Python 3.8
+#         run: |
+#           sudo apt-get install -y python3.8-distutils
+#           curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+#           sudo python3.8 get-pip.py
+#           sudo ln -s /usr/bin/python3.8 /usr/local/bin/python
 
-      - name: Cache Python Dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/pip
-            ~/.cache/serverless-python-requirements
-          key: python-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            python-${{ runner.os }}-
-            python-
+#       - name: Cache Python Dependencies
+#         uses: actions/cache@v2
+#         with:
+#           path: |
+#             ~/.cache/pip
+#             ~/.cache/serverless-python-requirements
+#           key: python-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
+#           restore-keys: |
+#             python-${{ runner.os }}-
+#             python-
 
-      - name: Install Python Requirements
-        run: |
-          pip install -r requirements.txt
+#       - name: Install Python Requirements
+#         run: |
+#           pip install -r requirements.txt
 
-      - name: Install Serverless Framework
-        run: |
-          npm install -g serverless@latest
-          npm install -g serverless-python-requirements@latest
+#       - name: Install Serverless Framework
+#         run: |
+#           npm install -g serverless@latest
+#           npm install -g serverless-python-requirements@latest
 
-      - name: Install Serverless Plugins
-        run: |
-          plugins=("serverless-deployment-bucket" "serverless-python-requirements" "serverless-dotenv-plugin" "serverless-prune-plugin")
-          for plugin in "${plugins[@]}"; do
-            sls plugin install --name $plugin
-          done
+#       - name: Install Serverless Plugins
+#         run: |
+#           plugins=("serverless-deployment-bucket" "serverless-python-requirements" "serverless-dotenv-plugin" "serverless-prune-plugin")
+#           for plugin in "${plugins[@]}"; do
+#             sls plugin install --name $plugin
+#           done
 
-      - name: Create .env file from GitHub secret
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
-            echo "${{ vars.PROD_ENV }}" > .env
-          elif [[ "${{ github.ref }}" == "refs/heads/uat" ]]; then
-            echo "${{ vars.UAT_ENV }}" > .env
-          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            echo "${{ vars.DEV_ENV }}" > .env
-          else
-            echo "This branch does not have corresponding environment variables"
-            exit 1
-          fi
+#       - name: Create .env file from GitHub secret
+#         run: |
+#           if [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+#             echo "${{ vars.PROD_ENV }}" > .env
+#           elif [[ "${{ github.ref }}" == "refs/heads/uat" ]]; then
+#             echo "${{ vars.UAT_ENV }}" > .env
+#           elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+#             echo "${{ vars.DEV_ENV }}" > .env
+#           else
+#             echo "This branch does not have corresponding environment variables"
+#             exit 1
+#           fi
 
-      - name: Run Serverless Doctor
-        run: serverless doctor
+#       - name: Run Serverless Doctor
+#         run: serverless doctor
 
-      - name: Set AWS credentials and deploy
-        run: |
-          if [ "${{ github.event_name }}" == "push" ]; then
-            if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
-              export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-              export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-              serverless deploy --stage dev
-            elif [ "${{ github.ref }}" == "refs/heads/uat" ]; then
-              export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-              export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-              serverless deploy --stage uat
-            elif [ "${{ github.ref }}" == "refs/heads/prod" ]; then
-              export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-              export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-              serverless deploy --stage prod
-            else
-              echo "Skipping deployment for branch: ${{ github.ref }}"
-            fi
-          else
-            echo "Skipping deployment for event: ${{ github.event_name }}"
-          fi
-          # Print AWS credentials for verification
+#       - name: Set AWS credentials and deploy
+#         run: |
+#           if [ "${{ github.event_name }}" == "push" ]; then
+#             if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+#               export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+#               export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+#               serverless deploy --stage dev
+#             elif [ "${{ github.ref }}" == "refs/heads/uat" ]; then
+#               export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+#               export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+#               serverless deploy --stage uat
+#             elif [ "${{ github.ref }}" == "refs/heads/prod" ]; then
+#               export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+#               export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+#               serverless deploy --stage prod
+#             else
+#               echo "Skipping deployment for branch: ${{ github.ref }}"
+#             fi
+#           else
+#             echo "Skipping deployment for event: ${{ github.event_name }}"
+#           fi
+#           # Print AWS credentials for verification
