@@ -1,96 +1,90 @@
 pipeline {
-    agent {
-        docker {
-            image 'public.ecr.aws/sam/build-python3.13'
-            args '-u root'
-        }
-    }
+    agent any
 
     environment {
-        AWS_REGION = 'ap-south-1'
+        // AWS Credentials
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY')
+        
+        // Environment-specific env files
+        DEV_ENV = credentials('AWS_DEV')
+        UAT_ENV = credentials('AWS_UAT')
+        PROD_ENV = credentials('AWS_PROD')
     }
-
+    
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-
-        stage('Install AWS SAM CLI') {
-            steps {
-                sh '''
-                sam --version
-                '''
-            }
-        }
-
-        stage('Determine Environment') {
+        
+        stage('Install Dependencies') {
             steps {
                 script {
-                    // Determine environment based on branch name
-                    def branch = env.BRANCH_NAME
-                    if (branch == 'dev') {
-                        env.STACK_NAME = 'product-service-dev'
-                        env.DEPLOY_ENV = 'dev'
-                        env.AWS_CREDENTIALS_ID = 'AWS_DEV'
-                    } else if (branch == 'uat') {
-                        env.STACK_NAME = 'product-service-uat'
-                        env.DEPLOY_ENV = 'uat'
-                        env.AWS_CREDENTIALS_ID = 'AWS_UAT'
-                    } else if (branch == 'prod') {
-                        env.STACK_NAME = 'product-service-prod'
-                        env.DEPLOY_ENV = 'prod'
-                        env.AWS_CREDENTIALS_ID = 'AWS_PROD'
+                    // Install Python dependencies
+                    sh 'pip3 install -r requirements.txt'
+                }
+            }
+        }
+        
+        stage('Prepare Environment File') {
+            steps {
+                script {
+                    // Determine which environment file to use based on branch
+                    if (env.BRANCH_NAME == 'dev') {
+                        writeFile file: '.env', text: env.DEV_ENV
+                    } else if (env.BRANCH_NAME == 'uat') {
+                        writeFile file: '.env', text: env.UAT_ENV
+                    } else if (env.BRANCH_NAME == 'prod') {
+                        writeFile file: '.env', text: env.PROD_ENV
                     } else {
-                        error "Branch ${branch} is not configured for deployment"
+                        error "No environment file for branch: ${env.BRANCH_NAME}"
                     }
-                    
-                    echo "Deploying to environment: ${env.DEPLOY_ENV}"
-                    echo "Using stack name: ${env.STACK_NAME}"
                 }
             }
         }
-
-        stage('Create Environment File') {
+        
+        stage('Serverless Doctor') {
+            steps {
+                sh 'serverless doctor'
+            }
+        }
+        
+        stage('Deploy') {
             steps {
                 script {
-                    // Create .env file from existing Jenkins credentials
-                    withCredentials([string(credentialsId: env.AWS_CREDENTIALS_ID, variable: 'ENV_CONTENT')]) {
-                        writeFile file: '.env', text: "${ENV_CONTENT}"
+                    // Deploy based on branch
+                    switch(env.BRANCH_NAME) {
+                        case 'dev':
+                            sh 'serverless deploy --stage dev'
+                            break
+                        case 'uat':
+                            sh 'serverless deploy --stage uat'
+                            break
+                        case 'prod':
+                            sh 'serverless deploy --stage prod'
+                            break
+                        default:
+                            echo "Skipping deployment for branch: ${env.BRANCH_NAME}"
                     }
-                }
-            }
-        }
-
-        stage('Build SAM Application') {
-            steps {
-                sh """
-                sam build --parameter-overrides Environment=${env.DEPLOY_ENV}
-                """
-            }
-        }
-
-        stage('Deploy to AWS') {
-            steps {
-                withAWS(credentials: env.AWS_CREDENTIALS_ID, region: "${AWS_REGION}") {
-                    sh """
-                    sam deploy --stack-name ${env.STACK_NAME} --resolve-s3 --capabilities CAPABILITY_IAM --no-confirm-changeset --parameter-overrides Environment=${env.DEPLOY_ENV}
-                    """
                 }
             }
         }
     }
-
+    
     post {
-        failure {
-            echo "Deployment to ${env.DEPLOY_ENV} environment failed!"
-        }
-        success {
-            echo "Deployment to ${env.DEPLOY_ENV} environment successful!"
-        }
         always {
+            // Clean up workspace
             cleanWs()
+        }
+        
+        success {
+            echo 'Deployment completed successfully!'
+        }
+        
+        failure {
+            echo 'Deployment failed. Please check the logs.'
         }
     }
 }
