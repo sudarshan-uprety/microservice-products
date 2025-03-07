@@ -1,17 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        // AWS Credentials
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY')
-        
-        // Environment-specific env files
-        DEV_ENV = credentials('AWS_DEV')
-        UAT_ENV = credentials('AWS_UAT')
-        PROD_ENV = credentials('AWS_PROD')
-    }
-    
     stages {
         stage('Checkout') {
             steps {
@@ -22,51 +11,45 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install Python dependencies
-                    sh 'pip3 install -r requirements.txt'
+                    sh """#!/bin/bash
+                        source ${env.SERVERLESS_VENV}/bin/activate
+                        pip install -r requirements.txt
+                    """
                 }
             }
         }
         
+        stage('Install Serverless Plugins') {
+            steps {
+                script {
+                    // Install the necessary Serverless plugins
+                    def plugins = [
+                        "serverless-deployment-bucket",
+                        "serverless-python-requirements",
+                        "serverless-dotenv-plugin",
+                        "serverless-prune-plugin"
+                    ]
+                    plugins.each { plugin ->
+                        sh "sls plugin install --name ${plugin}"
+                    }
+                }
+            }
+        }  
+
         stage('Prepare Environment File') {
             steps {
                 script {
                     // Determine which environment file to use based on branch
-                    if (env.BRANCH_NAME == 'dev') {
-                        writeFile file: '.env', text: env.DEV_ENV
-                    } else if (env.BRANCH_NAME == 'uat') {
-                        writeFile file: '.env', text: env.UAT_ENV
-                    } else if (env.BRANCH_NAME == 'prod') {
-                        writeFile file: '.env', text: env.PROD_ENV
-                    } else {
-                        error "No environment file for branch: ${env.BRANCH_NAME}"
-                    }
-                }
-            }
-        }
-        
-        stage('Serverless Doctor') {
-            steps {
-                sh 'serverless doctor'
-            }
-        }
-        
-        stage('Deploy') {
-            steps {
-                script {
-                    // Deploy based on branch
-                    switch(env.BRANCH_NAME) {
-                        case 'dev':
-                            sh 'serverless deploy --stage dev'
-                            break
-                        case 'uat':
-                            sh 'serverless deploy --stage uat'
-                            break
-                        case 'prod':
-                            sh 'serverless deploy --stage prod'
-                            break
-                        default:
-                            echo "Skipping deployment for branch: ${env.BRANCH_NAME}"
+                    def branch = env.BRANCH_NAME
+                    def envName = "AWS_" + branch.toUpperCase()
+
+                    // Use the dynamically generated environment variable to get the credentials
+                    withCredentials([file(credentialsId: "${envName}", variable: 'ENV_FILE')]) {
+                        // Write the content to the .env file
+                        writeFile file: '.env', text: readFile(ENV_FILE)
+                        sh """
+                        serverless deploy --stage ${branch}
+                        """
                     }
                 }
             }
