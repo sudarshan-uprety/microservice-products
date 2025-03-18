@@ -58,16 +58,16 @@ pipeline {
     
     post {
         always {
-            // Clean up workspace
+            script {
+                commiterEmail = sh(script: "git show -s --format='%ae'", returnStdout: true).trim()
+            }
             cleanWs()
         }
-        
-        success {
-            echo 'Deployment completed successfully!'
-        }
-        
         failure {
-            echo 'Deployment failed. Please check the logs.'
+            emailext body: '${DEFAULT_CONTENT}',
+                to: commiterEmail, 
+                subject: '${DEFAULT_SUBJECT}', 
+                saveOutput: false
         }
     }
 }
