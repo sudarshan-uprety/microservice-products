@@ -6,7 +6,7 @@ pipeline {
             steps {
                 checkout scm
             }
-        }
+        } 
         
         stage('Install Dependencies') {
             steps {
