@@ -43,7 +43,7 @@ pipeline {
                     def branch = env.BRANCH_NAME
                     def envName = "AWS_" + branch.toUpperCase()
 
-                    // Use the dynamically generated environment variable to get the credentials
+                    // Use the dynamically generated environment variable to get the credentials 
                     withCredentials([file(credentialsId: "${envName}", variable: 'ENV_FILE')]) {
                         // Write the content to the .env file
                         writeFile file: '.env', text: readFile(ENV_FILE)
