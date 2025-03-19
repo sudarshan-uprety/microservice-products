@@ -17,6 +17,8 @@ custom:
       description: Python requirements lambda layer
       compatibleRuntimes:
         - python3.10
+    dockerizePip: true
+    docker: true
     slim: false
     fileName: requirements.txt
     useStaticCache: false
