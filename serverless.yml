@@ -22,8 +22,8 @@ custom:
     useStaticCache: false
     useDownloadCache: false
     pipCmdExtraArgs:
-      - "--compile"
       - "--platform=manylinux2014_x86_64"
+      - "--only-binary=:all:"
   prune:
     automatic: true
     number: 1
