@@ -7,7 +7,7 @@ dateutils==0.6.12
 dnspython==2.6.1
 docutils==0.16
 email_validator==2.2.0
-environ==1.0
+# environ==1.0
 mongoengine==0.20.0
 mongoengine_goodjson==1.1.8
 pillow==10.3.0
