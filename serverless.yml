@@ -17,13 +17,13 @@ custom:
       description: Python requirements lambda layer
       compatibleRuntimes:
         - python3.10
-    dockerImage: public.ecr.aws/sam/build-python3.10:latest-arm64
-    dockerizePip: true
-    docker: true
     slim: false
     fileName: requirements.txt
     useStaticCache: false
     useDownloadCache: false
+    pipCmdExtraArgs:
+      - "--compile"
+      - "--platform=manylinux2014_x86_64"
   prune:
     automatic: true
     number: 1
