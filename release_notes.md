@@ -5,3 +5,5 @@
 - Fixed critical issue with login
 ## Performance Improvements
 - Optimized database queries
+## Breaking Changes
+- API endpoint /users has changed
