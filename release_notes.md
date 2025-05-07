@@ -7,3 +7,5 @@
 - Optimized database queries
 ## Breaking Changes
 - API endpoint /users has changed
+## How to Upgrade
+- Follow the migration guide
